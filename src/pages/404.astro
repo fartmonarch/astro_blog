@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLangFromUrl } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const content = {
+    title: isZh ? '404 | 页面未找到' : '404 | Page Not Found',
+    heading: '404',
+    sub: isZh ? '页面未找到。' : 'Page not found.',
+    body: isZh
+        ? '您寻找的页面可能已被移动、删除，或者从未存在过。有时候，迷路也是一种开始。'
+        : "The page you're looking for may have been moved, deleted, or never existed.",
+    home: isZh ? '返回首页' : 'Return home',
+    archive: isZh ? '浏览文章' : 'Browse posts',
+};
+---
+
+<BaseLayout title={content.title} description={content.sub}>
+    <div class="not-found">
+        <span class="code">404</span>
+        <h1>{content.sub}</h1>
+        <p>{content.body}</p>
+        <div class="actions">
+            <a href={`/${lang}/`}>{content.home}</a>
+            <a href={`/${lang}/archive/`} class="secondary">{content.archive}</a>
+        </div>
+    </div>
+</BaseLayout>
+
+<style>
+    .not-found {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 60vh;
+        gap: 1.5rem;
+    }
+    .code {
+        font-size: clamp(6rem, 15vw, 12rem);
+        font-weight: 700;
+        line-height: 1;
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(79, 165, 216, 0.2);
+        letter-spacing: -0.05em;
+        user-select: none;
+    }
+    h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-top: 0; color: #ffffff; }
+    p { font-size: 1.1rem; color: rgba(218, 234, 255, 0.7); max-width: 480px; }
+    .actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .actions a {
+        padding: 0.6rem 1.4rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all var(--transition-speed) ease;
+        text-decoration: none;
+    }
+    .actions a:not(.secondary) { background: var(--accent); color: #ffffff; }
+    .actions a:not(.secondary):hover { background: var(--light); color: var(--bg-color); }
+    .actions a.secondary { color: var(--light); border: 1px solid rgba(79, 165, 216, 0.3); }
+    .actions a.secondary:hover { border-color: var(--light); color: #ffffff; }
+</style>
