@@ -1,0 +1,82 @@
+---
+import '../styles/global.css';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getLangFromUrl } from '../i18n/utils';
+
+export interface Props {
+    title: string;
+    description: string;
+}
+
+const { title, description } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+---
+
+<html lang={lang}>
+    <head>
+        <BaseHead title={title} description={description} />
+    </head>
+    <body>
+        <Header />
+        <main>
+            <slot />
+        </main>
+        <Footer />
+
+        <!-- 回到顶部按钮 -->
+        <button id="back-to-top" class="back-to-top" aria-label="回到顶部">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+        </button>
+
+        <script>
+            const btn = document.getElementById('back-to-top');
+            if (btn) {
+                window.addEventListener('scroll', () => {
+                    btn.classList.toggle('show', window.scrollY > 300);
+                }, { passive: true });
+                btn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        </script>
+    </body>
+</html>
+
+<style>
+    .back-to-top {
+        position: fixed;
+        bottom: 2rem; right: 2rem;
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: rgba(1, 14, 84, 0.4);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(79, 165, 216, 0.25);
+        color: var(--light);
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(15px);
+        transition: all 0.3s ease;
+        z-index: 99;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .back-to-top:hover {
+        background: rgba(8, 85, 177, 0.3);
+        border-color: var(--light);
+        color: #ffffff;
+        transform: translateY(-4px);
+    }
+    .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+</style>

@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { ui, defaultLang } from '../../i18n/ui';
+import { useTranslations } from '../../i18n/utils';
+import type { CollectionEntry } from 'astro:content';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+export function getStaticPaths() {
+  return Object.keys(ui).map((lang) => {
+    return { params: { lang: lang === defaultLang ? undefined : lang } };
+  });
+}
+
+const { lang } = Astro.params;
+const currentLang = lang || defaultLang;
+const t = useTranslations(currentLang as keyof typeof ui);
+
+const pageTitle = `你的站点名 | ${t('archive.title')}`;
+const pageDescription = t('archive.description');
+
+const posts: CollectionEntry<'blog'>[] = await getCollection('blog', (post) => {
+  return post.id.startsWith(`${currentLang}/`);
+});
+posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const postsByYear = posts.reduce<Record<number, CollectionEntry<'blog'>[]>>((acc, post) => {
+  const year = post.data.pubDate.getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+
+const years = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+    <section class="archive-header">
+        <h1>{t('archive.title')}</h1>
+        <p>{t('archive.description')}</p>
+    </section>
+    <section class="archive-list">
+        {years.map((year) => (
+            <div class="year-group">
+                <h2 class="year-label">{year}</h2>
+                <ul>
+                    {postsByYear[year].map((post) => {
+                        const slugWithoutLang = post.id.replace(`${currentLang}/`, '');
+                        return (
+                            <li>
+                                <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
+                                    <span class="title">{post.data.title}</span>
+                                    <span class="date">
+                                        {post.data.pubDate.toLocaleDateString(currentLang, {
+                                            month: 'long', day: 'numeric',
+                                        })}
+                                    </span>
+                                </a>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        ))}
+    </section>
+</BaseLayout>
+
+<style>
+    .archive-header { margin-bottom: 3rem; }
+    .year-group { margin-bottom: 3rem; }
+    .year-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        margin-top: 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(79, 165, 216, 0.15);
+    }
+    ul { list-style-type: none; padding: 0; margin: 0; }
+    li { margin-bottom: 0; }
+    li a {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(218, 234, 255, 0.05);
+        transition: all var(--transition-speed) ease;
+    }
+    li a:hover { padding-left: 0.5rem; }
+    li a:hover .title { color: var(--text-color); }
+    .title {
+        font-size: clamp(1rem, 2.5vw, 1.1rem);
+        font-weight: 600;
+        color: var(--light);
+    }
+    .date {
+        font-size: 0.85rem;
+        color: rgba(218, 234, 255, 0.5);
+        margin-top: 0.15rem;
+    }
+    @media (min-width: 640px) {
+        li a { flex-direction: row; justify-content: space-between; align-items: center; }
+        .date { margin-top: 0; flex-shrink: 0; margin-left: 1rem; }
+    }
+</style>
