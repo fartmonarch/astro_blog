@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Profile from '../../components/Profile.astro';
-import { getCollection } from 'astro:content';
-import { ui, defaultLang } from '../../i18n/ui';
-import { useTranslations } from '../../i18n/utils';
-import type { CollectionEntry } from 'astro:content';
-import { getRelativeLocaleUrl } from 'astro:i18n';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Profile from "../../components/Profile.astro";
+import { getCollection } from "astro:content";
+import { ui, defaultLang } from "../../i18n/ui";
+import { useTranslations } from "../../i18n/utils";
+import type { CollectionEntry } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
 
 export function getStaticPaths() {
   return Object.keys(ui).map((lang) => {
@@ -17,129 +17,149 @@ const { lang } = Astro.params;
 const currentLang = lang || defaultLang;
 const t = useTranslations(currentLang as keyof typeof ui);
 
-const pageTitle = `你的站点名 | ${t('home.title')}`;
-const pageDescription = t('home.subtitle');
+const pageTitle = `你的站点名 | ${t("home.title")}`;
+const pageDescription = t("home.subtitle");
 
-const posts: CollectionEntry<'blog'>[] = await getCollection('blog', (post) => {
+const posts: CollectionEntry<"blog">[] = await getCollection("blog", (post) => {
   return post.id.startsWith(`${currentLang}/`);
 });
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const archiveLabel = currentLang === 'zh' ? '全部文章 →' : 'All posts →';
+const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →";
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-    <div class="home-layout">
-        <aside class="sidebar">
-            <Profile />
-        </aside>
-        <div class="content-area">
-            <section class="recent-posts">
-                <h2>{t('nav.archive')}</h2>
-                <div class="posts-container">
-                    <ul>
-                        {posts.map((post) => {
-                            const slugWithoutLang = post.id.replace(`${currentLang}/`, '');
-                            return (
-                                <li>
-                                    <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
-                                        <span class="title">{post.data.title}</span>
-                                        <span class="date">
-                                            {post.data.pubDate.toLocaleDateString(currentLang, {
-                                                year: 'numeric', month: 'long', day: 'numeric',
-                                            })}
-                                        </span>
-                                    </a>
-                                </li>
-                            );
+  <div class="home-layout">
+    <aside class="sidebar">
+      <Profile />
+    </aside>
+    <div class="content-area">
+      <section class="recent-posts">
+        <h2>{t("nav.archive")}</h2>
+        <div class="posts-container">
+          <ul>
+            {
+              posts.map((post) => {
+                const slugWithoutLang = post.id.replace(`${currentLang}/`, "");
+                return (
+                  <li>
+                    <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
+                      <span class="title">{post.data.title}</span>
+                      <span class="date">
+                        {post.data.pubDate.toLocaleDateString(currentLang, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
                         })}
-                    </ul>
-                    <div class="fade-more">
-                        <a href={getRelativeLocaleUrl(currentLang, 'archive')} class="more-link">
-                            {archiveLabel}
-                        </a>
-                    </div>
-                </div>
-            </section>
+                      </span>
+                    </a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+          <div class="fade-more">
+            <a href={getRelativeLocaleUrl(currentLang, "archive")} class="more-link">
+              {archiveLabel}
+            </a>
+          </div>
         </div>
+      </section>
     </div>
+  </div>
 </BaseLayout>
 
 <style>
+  .home-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  .sidebar {
+    align-self: start;
+  }
+  @media (min-width: 860px) {
     .home-layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        align-items: start;
+      grid-template-columns: 1fr 3fr;
+      gap: 4rem;
     }
-    .sidebar { align-self: start; }
-    @media (min-width: 860px) {
-        .home-layout {
-            grid-template-columns: 1fr 3fr;
-            gap: 4rem;
-        }
-        .sidebar {
-            position: sticky;
-            top: 2rem;
-        }
+    .sidebar {
+      position: sticky;
+      top: 2rem;
     }
-    .recent-posts h2 {
-        font-size: 1.25rem;
-        border-bottom: 1px solid rgba(218, 234, 255, 0.1);
-        padding-bottom: 0.5rem;
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-    }
-    .posts-container {
-        position: relative;
-        max-height: 520px;
-        overflow: hidden;
-    }
-    ul { list-style-type: none; padding: 0; }
-    li { margin-bottom: 0.75rem; }
+  }
+  .recent-posts h2 {
+    font-size: 1.25rem;
+    border-bottom: 1px solid rgba(218, 234, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+  .posts-container {
+    position: relative;
+    max-height: 520px;
+    overflow: hidden;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 0.75rem;
+  }
+  li a {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all var(--transition-speed) ease;
+  }
+  li a:hover {
+    background: rgba(1, 14, 84, 0.5);
+    border-color: rgba(79, 165, 216, 0.15);
+    transform: translateX(4px);
+  }
+  .title {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    font-weight: 600;
+    color: var(--light);
+    margin-bottom: 0.3rem;
+  }
+  .date {
+    font-size: 0.82rem;
+    color: rgba(218, 234, 255, 0.45);
+  }
+  .fade-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background: linear-gradient(to bottom, transparent 0%, var(--bg-color) 65%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    pointer-events: none;
+  }
+  .more-link {
+    font-size: 0.9rem;
+    color: rgba(218, 234, 255, 0.55);
+    pointer-events: auto;
+  }
+  .more-link:hover {
+    color: var(--light);
+  }
+  @media (min-width: 640px) {
     li a {
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        padding: 0.75rem 0.9rem;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        transition: all var(--transition-speed) ease;
-    }
-    li a:hover {
-        background: rgba(1, 14, 84, 0.5);
-        border-color: rgba(79, 165, 216, 0.15);
-        transform: translateX(4px);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
     }
     .title {
-        font-size: clamp(1rem, 2.5vw, 1.15rem);
-        font-weight: 600;
-        color: var(--light);
-        margin-bottom: 0.3rem;
+      margin-bottom: 0;
     }
-    .date { font-size: 0.82rem; color: rgba(218, 234, 255, 0.45); }
-    .fade-more {
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 90px;
-        background: linear-gradient(to bottom, transparent 0%, var(--bg-color) 65%);
-        display: flex;
-        align-items: flex-end;
-        justify-content: flex-start;
-        pointer-events: none;
-    }
-    .more-link {
-        font-size: 0.9rem;
-        color: rgba(218, 234, 255, 0.55);
-        pointer-events: auto;
-    }
-    .more-link:hover { color: var(--light); }
-    @media (min-width: 640px) {
-        li a {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .title { margin-bottom: 0; }
-    }
+  }
 </style>

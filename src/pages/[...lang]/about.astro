@@ -12,9 +12,9 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 const currentLang = lang || defaultLang;
 
-const entry = await getEntry('pages', `${currentLang}/about`);
+const entry = await getEntry("pages", `${currentLang}/about`);
 if (!entry) {
-  return Astro.redirect('/404');
+  return Astro.redirect("/404");
 }
 
 const { Content } = await render(entry);
