@@ -1,5 +1,3 @@
-/* ===== 字体定义 ===== */
-/* 从 Zahit 项目复制 public/fonts/ 目录到你的项目 */
 @font-face {
   font-family: "Source Sans 3";
   font-style: normal;
@@ -10,6 +8,7 @@
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 @font-face {
   font-family: "Source Sans 3";
   font-style: italic;
@@ -20,24 +19,24 @@
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 @font-face {
   font-family: "Source Sans 3";
   font-style: normal;
   font-display: swap;
   font-weight: 200 900;
-  src: url("/fonts/source-sans-3/source-sans-3-latin-ext-wght-normal.woff2")
-    format("woff2-variations");
+  src: url("/fonts/source-sans-3/source-sans-3-latin-ext-wght-normal.woff2") format("woff2-variations");
   unicode-range:
     U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113,
     U+2C60-2C7F, U+A720-A7FF;
 }
+
 @font-face {
   font-family: "Source Sans 3";
   font-style: italic;
   font-display: swap;
   font-weight: 200 900;
-  src: url("/fonts/source-sans-3/source-sans-3-latin-ext-wght-italic.woff2")
-    format("woff2-variations");
+  src: url("/fonts/source-sans-3/source-sans-3-latin-ext-wght-italic.woff2") format("woff2-variations");
   unicode-range:
     U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113,
     U+2C60-2C7F, U+A720-A7FF;
@@ -45,16 +44,116 @@
 
 /* ===== CSS 变量（设计令牌） ===== */
 :root {
-  --bg-color: #00022b; /* 深空蓝背景 */
-  --dark: #010e54; /* 深色区块 */
-  --accent: #0855b1; /* 主强调色 */
-  --light: #4fa5d8; /* 亮蓝色悬停态 */
-  --text-color: #daeaff; /* 冰蓝色正文 */
+  /* -------- 核心色 -------- */
+  --bg-color: #f7f0e6;
+  /* 暖米色背景 · 柔和护眼 */
+  --dark: #ede4d3;
+  /* 浅卡其区块 · 温和层次 */
+  --accent: #b8895c;
+  /* 暖琥珀色 · 主强调/按钮/链接 */
+  --light: #b8895c;
+  /* 主链接色 · 暖琥珀 */
+  --accent-hover: #8a5d35;
+  /* 链接悬停 · 深琥珀 */
+  --text-muted: #8c735c;
+  /* 装饰性文字（页脚、表头等） */
+  --text-color: #3d2c1e;
+  /* 深暖褐 · 正文阅读色 */
+
+  /* -------- 辅助色 -------- */
+  --border-color: #e5d8c4;
+  /* 柔和边框 */
+  --shadow-color: rgba(120, 90, 60, 0.10);
+  /* 暖灰阴影 */
+  --code-bg: #f2eadc;
+  /* 代码块背景 */
+  --tag-bg: #e8ddcc;
+  /* 标签/徽章背景 */
+  --quote-border: #b8895c;
+  /* 引用边框色 */
+  --card-bg: #f8e9cd;
+  /* 卡片背景 */
+  --card-hover-bg: #f0dbb0;
+  /* 卡片悬停背景 */
+  --card-border: rgba(184, 137, 92, 0.12);
+  /* 卡片柔和边框 */
+  --heading-color: #3d2c1e;
+  /* 标题与加粗文字 */
+  --text-secondary: rgba(61, 44, 30, 0.55);
+  /* 次要文字 */
+  --tag-hover-color: #ffffff;
+  /* 标签悬停文字 */
+  --text-stroke: rgba(184, 137, 92, 0.15);
+  /* 404 文字描边 */
+  --lang-switcher-color: rgba(61, 44, 30, 0.5);
+  /* 语言切换器 */
+  --lang-switcher-hover-bg: rgba(0, 0, 0, 0.05);
+  /* 语言切换器悬停 */
+  --back-to-top-bg: rgba(237, 228, 211, 0.6);
+  /* 回到顶部按钮 */
+  --back-to-top-border: rgba(184, 137, 92, 0.3);
+  --back-to-top-hover-bg: rgba(184, 137, 92, 0.25);
+  --copy-btn-hover-color: #ffffff;
+  /* 复制按钮悬停 */
+
   --font-family-body: "Source Sans 3", sans-serif;
   --font-family-heading: "Source Sans 3", sans-serif;
   --site-width: min(80%, calc(100% - 2rem));
   --content-padding: 2rem;
   --transition-speed: 0.2s;
+}
+
+html.dark {
+  --bg-color: #00022b;
+  /* 深空蓝背景 */
+  --dark: #010e54;
+  /* 深色区块 */
+  --accent: #0855b1;
+  /* 主强调色 */
+  --light: #4fa5d8;
+  /* 主链接色 · 亮蓝 */
+  --accent-hover: #ffffff;
+  /* 链接悬停 · 白色高亮 */
+  --text-muted: #7da8cc;
+  /* 装饰性文字（页脚、表头等） */
+  --text-color: #daeaff;
+  /* 冰蓝色正文 */
+
+  /* -------- 辅助色扩展 (新增) -------- */
+  --border-color: #1a2f7a;
+  /* 边框 · 比背景亮，保持清晰边界 */
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  /* 阴影 · 深色下用纯黑半透明，层次自然 */
+  --code-bg: #071443;
+  /* 代码块背景 · 介于背景与深色区块之间 */
+  --tag-bg: #0e236a;
+  /* 标签/徽章背景 · 略亮于深色区块 */
+  --quote-border: #4fa5d8;
+  /* 引用边框 · 直接使用亮蓝色，醒目协调 */
+  --card-bg: #010e54;
+  /* 卡片背景 (可选) · 与 --dark 一致，便于统一 */
+  --card-hover-bg: #0a1f6e;
+  /* 卡片悬停背景 */
+  --card-border: rgba(79, 165, 216, 0.1);
+  /* 卡片柔和边框 */
+  --heading-color: #ffffff;
+  /* 标题与加粗文字 */
+  --text-secondary: rgba(218, 234, 255, 0.5);
+  /* 次要文字 */
+  --tag-hover-color: #ffffff;
+  /* 标签悬停文字 */
+  --text-stroke: rgba(79, 165, 216, 0.2);
+  /* 404 文字描边 */
+  --lang-switcher-color: rgba(218, 234, 255, 0.5);
+  /* 语言切换器 */
+  --lang-switcher-hover-bg: rgba(255, 255, 255, 0.1);
+  /* 语言切换器悬停 */
+  --back-to-top-bg: rgba(1, 14, 84, 0.4);
+  /* 回到顶部按钮 */
+  --back-to-top-border: rgba(79, 165, 216, 0.25);
+  --back-to-top-hover-bg: rgba(8, 85, 177, 0.3);
+  --copy-btn-hover-color: #ffffff;
+  /* 复制按钮悬停 */
 }
 
 /* ===== CSS Reset ===== */
@@ -63,6 +162,7 @@
 *::after {
   box-sizing: border-box;
 }
+
 body,
 h1,
 h2,
@@ -78,6 +178,7 @@ ol {
   margin: 0;
   padding: 0;
 }
+
 img,
 picture,
 video,
@@ -102,6 +203,7 @@ body {
   align-items: center;
   -webkit-font-smoothing: antialiased;
 }
+
 main {
   flex: 1;
   width: var(--site-width);
@@ -116,33 +218,39 @@ h3,
 h4 {
   font-family: var(--font-family-heading);
   line-height: 1.3;
-  color: #ffffff;
+  color: var(--text-color);
   margin-bottom: 1rem;
   margin-top: 2.5rem;
   font-weight: 600;
 }
+
 h1 {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   margin-top: 1.5rem;
 }
+
 h2 {
   font-size: clamp(1.35rem, 3.5vw, 1.75rem);
 }
+
 p {
   margin-bottom: 1.5rem;
 }
+
 a {
   color: var(--light);
   text-decoration: none;
   transition: color var(--transition-speed) ease;
 }
+
 a:hover {
-  color: var(--text-color);
+  color: var(--accent-hover);
 }
+
 strong,
 b {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--heading-color);
 }
 
 /* ===== 代码块 ===== */
@@ -158,6 +266,7 @@ pre {
   line-height: 1.6;
   position: relative;
 }
+
 pre::before {
   content: attr(data-language);
   position: absolute;
@@ -171,12 +280,14 @@ pre::before {
   text-transform: uppercase;
   border-radius: 0 0 4px 4px;
 }
+
 code {
   font-family: "JetBrains Mono", "Fira Code", monospace;
 }
-:not(pre) > code {
+
+:not(pre)>code {
   background-color: rgba(79, 165, 216, 0.1);
-  color: var(--light);
+  color: var(--accent);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9em;
@@ -188,12 +299,14 @@ table {
   border-collapse: collapse;
   font-size: 0.95rem;
 }
+
 th,
 td {
   padding: 0.75rem 1rem;
   border: 1px solid rgba(218, 234, 255, 0.1);
   text-align: left;
 }
+
 th {
   background-color: rgba(218, 234, 255, 0.03);
   color: var(--light);
@@ -216,9 +329,11 @@ th {
   opacity: 0;
   transition: all 0.2s ease;
 }
+
 pre:hover .copy-button {
   opacity: 1;
 }
+
 .copy-button:hover {
   background: rgba(79, 165, 216, 0.2);
   border-color: var(--accent);
@@ -236,6 +351,7 @@ pre:hover .copy-button {
   :root {
     --content-padding: 1.25rem;
   }
+
   body {
     font-size: 1rem;
   }

@@ -3,6 +3,7 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { languages } from "../i18n/ui";
 import { SITE_CONFIG } from "../config";
 import { getRelativeLocaleUrl } from "astro:i18n";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -19,18 +20,21 @@ const t = useTranslations(lang);
       <a href={getRelativeLocaleUrl(lang, "tags")}>{t("nav.tags")}</a>
       <a href={getRelativeLocaleUrl(lang, "about")}>{t("nav.about")}</a>
     </div>
-    <div class="lang-switcher">
-      <ul>
-        {
-          Object.entries(languages).map(([abbr]) => (
-            <li>
-              <a href={getRelativeLocaleUrl(abbr, "")} class={lang === abbr ? "active" : ""}>
-                {abbr.toUpperCase()}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+    <div class="nav-actions">
+      <ThemeToggle />
+      <div class="lang-switcher">
+        <ul>
+          {
+            Object.entries(languages).map(([abbr]) => (
+              <li>
+                <a href={getRelativeLocaleUrl(abbr, "")} class={lang === abbr ? "active" : ""}>
+                  {abbr.toUpperCase()}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </nav>
 </header>
@@ -43,26 +47,29 @@ const t = useTranslations(lang);
     margin-right: auto;
   }
   nav {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
+  }
+  .logo {
+    flex-shrink: 0;
   }
   .logo a {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--heading-color);
   }
   .logo a:hover {
     color: var(--accent);
   }
   .links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     gap: 1.5rem;
-    order: 3;
-    width: 100%;
-    justify-content: center;
+    white-space: nowrap;
   }
   .links a {
     font-size: 0.95rem;
@@ -70,10 +77,14 @@ const t = useTranslations(lang);
     color: var(--light);
   }
   .links a:hover {
-    color: #ffffff;
+    color: var(--heading-color);
   }
-  .lang-switcher {
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
     margin-left: auto;
+    flex-shrink: 0;
   }
   .lang-switcher ul {
     display: flex;
@@ -85,29 +96,36 @@ const t = useTranslations(lang);
   .lang-switcher a {
     font-size: 0.85rem;
     font-weight: 600;
-    color: rgba(218, 234, 255, 0.5);
+    color: var(--lang-switcher-color);
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
   }
   .lang-switcher a:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--heading-color);
+    background: var(--lang-switcher-hover-bg);
   }
   .lang-switcher a.active {
-    color: var(--bg-color);
-    background: var(--light);
+    color: var(--heading-color);
+    background: var(--accent);
   }
   @media (min-width: 640px) {
     nav {
       flex-wrap: nowrap;
     }
-    .links {
-      order: unset;
-      width: auto;
-      justify-content: flex-start;
+    .nav-actions {
+      margin-left: auto;
     }
-    .lang-switcher {
-      margin-left: 0;
+  }
+  @media (max-width: 639px) {
+    .links {
+      position: static;
+      transform: none;
+      order: 3;
+      width: 100%;
+      justify-content: center;
+    }
+    .nav-actions {
+      margin-left: auto;
     }
   }
 </style>

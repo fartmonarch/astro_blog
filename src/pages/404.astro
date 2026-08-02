@@ -43,18 +43,18 @@ const content = {
     font-weight: 700;
     line-height: 1;
     color: transparent;
-    -webkit-text-stroke: 2px rgba(79, 165, 216, 0.2);
+    -webkit-text-stroke: 2px var(--text-stroke);
     letter-spacing: -0.05em;
     user-select: none;
   }
   h1 {
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     margin-top: 0;
-    color: #ffffff;
+    color: var(--heading-color);
   }
   p {
     font-size: 1.1rem;
-    color: rgba(218, 234, 255, 0.7);
+    color: var(--text-secondary);
     max-width: 480px;
   }
   .actions {
@@ -73,18 +73,17 @@ const content = {
   }
   .actions a:not(.secondary) {
     background: var(--accent);
-    color: #ffffff;
+    color: var(--heading-color);
   }
   .actions a:not(.secondary):hover {
-    background: var(--light);
-    color: var(--bg-color);
+    filter: brightness(1.15);
   }
   .actions a.secondary {
     color: var(--light);
-    border: 1px solid rgba(79, 165, 216, 0.3);
+    border: 1px solid var(--border-color);
   }
   .actions a.secondary:hover {
     border-color: var(--light);
-    color: #ffffff;
+    color: var(--heading-color);
   }
 </style>

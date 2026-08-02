@@ -63,7 +63,7 @@ const bio = AUTHOR.bio[lang as keyof typeof AUTHOR.bio] ?? AUTHOR.bio.en;
   .info h2 {
     font-size: 1.8rem;
     margin-bottom: 0.2rem;
-    color: #ffffff;
+    color: var(--text-color);
   }
   .role {
     display: block;
@@ -75,7 +75,7 @@ const bio = AUTHOR.bio[lang as keyof typeof AUTHOR.bio] ?? AUTHOR.bio.en;
   .bio {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(218, 234, 255, 0.8);
+    color: var(--text-color);
     margin-bottom: 1.5rem;
   }
   .socials {
@@ -91,14 +91,14 @@ const bio = AUTHOR.bio[lang as keyof typeof AUTHOR.bio] ?? AUTHOR.bio.en;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(218, 234, 255, 0.05);
+    background: var(--card-bg);
     color: var(--light);
     font-size: 1.2rem;
     transition: all var(--transition-speed) ease;
   }
   .socials a:hover {
     background: var(--accent);
-    color: #ffffff;
+    color: var(--heading-color);
     transform: translateY(-2px);
   }
   @media (max-width: 859px) {

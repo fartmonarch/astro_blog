@@ -91,7 +91,7 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
   }
   .recent-posts h2 {
     font-size: 1.25rem;
-    border-bottom: 1px solid rgba(218, 234, 255, 0.1);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -118,8 +118,8 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
     transition: all var(--transition-speed) ease;
   }
   li a:hover {
-    background: rgba(1, 14, 84, 0.5);
-    border-color: rgba(79, 165, 216, 0.15);
+    background: var(--card-hover-bg);
+    border-color: var(--card-border);
     transform: translateX(4px);
   }
   .title {
@@ -130,7 +130,7 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
   }
   .date {
     font-size: 0.82rem;
-    color: rgba(218, 234, 255, 0.45);
+    color: var(--text-secondary);
   }
   .fade-more {
     position: absolute;
@@ -146,7 +146,7 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
   }
   .more-link {
     font-size: 0.9rem;
-    color: rgba(218, 234, 255, 0.55);
+    color: var(--text-secondary);
     pointer-events: auto;
   }
   .more-link:hover {

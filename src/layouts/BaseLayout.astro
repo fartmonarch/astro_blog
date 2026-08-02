@@ -42,7 +42,7 @@ const lang = getLangFromUrl(Astro.url);
       </svg>
     </button>
 
-    <script>
+    <script is:inline>
       const btn = document.getElementById("back-to-top");
       if (btn) {
         window.addEventListener(
@@ -56,6 +56,23 @@ const lang = getLangFromUrl(Astro.url);
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
       }
+
+      (function () {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        // 优先级：用户保存的设置 > 系统偏好
+        const isDark = savedTheme ? savedTheme === "dark" : prefersDark;
+        document.documentElement.classList.toggle("dark", isDark);
+      })();
+
+      // 如果你开启了 Astro View Transitions，必须加这段，防止页面跳转时闪烁
+      document.addEventListener("astro:after-swap", () => {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const isDark = savedTheme ? savedTheme === "dark" : prefersDark;
+        document.documentElement.classList.toggle("dark", isDark);
+      });
     </script>
   </body>
 </html>
@@ -68,9 +85,9 @@ const lang = getLangFromUrl(Astro.url);
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(1, 14, 84, 0.4);
+    background: var(--back-to-top-bg);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(79, 165, 216, 0.25);
+    border: 1px solid var(--back-to-top-border);
     color: var(--light);
     cursor: pointer;
     opacity: 0;
@@ -83,9 +100,9 @@ const lang = getLangFromUrl(Astro.url);
     justify-content: center;
   }
   .back-to-top:hover {
-    background: rgba(8, 85, 177, 0.3);
+    background: var(--back-to-top-hover-bg);
     border-color: var(--light);
-    color: #ffffff;
+    color: var(--copy-btn-hover-color);
     transform: translateY(-4px);
   }
   .back-to-top.show {
