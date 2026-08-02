@@ -1,4 +1,6 @@
 ---
+import SpeedInsights from "@vercel/speed-insights/astro";
+
 export interface Props {
   title: string;
   description: string;
@@ -12,3 +14,5 @@ const { title, description } = Astro.props;
 <meta name="generator" content={Astro.generator} />
 <title>{title}</title>
 <meta name="description" content={description} />
+
+<SpeedInsights />
