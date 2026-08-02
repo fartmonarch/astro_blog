@@ -127,10 +127,12 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
     font-weight: 600;
     color: var(--light);
     margin-bottom: 0.3rem;
+    transition: color 0.3s ease;
   }
   .date {
     font-size: 0.82rem;
     color: var(--text-secondary);
+    transition: color 0.3s ease;
   }
   .fade-more {
     position: absolute;
@@ -138,11 +140,14 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
     left: 0;
     right: 0;
     height: 90px;
-    background: linear-gradient(to bottom, transparent 0%, var(--bg-color) 65%);
+    background: var(--bg-color);
+    mask: linear-gradient(to bottom, transparent 0%, black 65%);
+    -webkit-mask: linear-gradient(to bottom, transparent 0%, black 65%);
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
     pointer-events: none;
+    transition: background-color 0.3s ease;
   }
   .more-link {
     font-size: 0.9rem;

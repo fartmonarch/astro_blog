@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
@@ -16,6 +17,7 @@ const lang = getLangFromUrl(Astro.url);
 
 <html lang={lang}>
   <head>
+    <ClientRouter />
     <BaseHead title={title} description={description} />
   </head>
   <body>
@@ -60,19 +62,9 @@ const lang = getLangFromUrl(Astro.url);
       (function () {
         const savedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-        // 优先级：用户保存的设置 > 系统偏好
         const isDark = savedTheme ? savedTheme === "dark" : prefersDark;
         document.documentElement.classList.toggle("dark", isDark);
       })();
-
-      // 如果你开启了 Astro View Transitions，必须加这段，防止页面跳转时闪烁
-      document.addEventListener("astro:after-swap", () => {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const isDark = savedTheme ? savedTheme === "dark" : prefersDark;
-        document.documentElement.classList.toggle("dark", isDark);
-      });
     </script>
   </body>
 </html>

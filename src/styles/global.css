@@ -191,6 +191,10 @@ iframe {
 }
 
 /* ===== 全局样式 ===== */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -202,6 +206,28 @@ body {
   flex-direction: column;
   align-items: center;
   -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+main,
+header,
+footer,
+nav,
+section,
+article,
+aside,
+li {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+h1, h2, h3, h4,
+p, li, span,
+a {
+  transition: color 0.3s ease;
 }
 
 main {

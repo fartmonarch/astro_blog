@@ -14,7 +14,7 @@
       <feDisplacementMap
         in="SourceGraphic"
         in2="noise"
-        scale="4.5"
+        scale="3"
         xChannelSelector="R"
         yChannelSelector="G"></feDisplacementMap>
     </filter>
@@ -90,8 +90,8 @@
     --stars-color: #fff8e1;
     --clouds-color: #f4f4f4;
     --back-clouds-color: #bacfe0;
-    --transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
-    --circle-transition: 0.3s cubic-bezier(0, -0.02, 0.35, 1.17);
+    --transition: 0.5s cubic-bezier(0.2, 0, 0.4, 1.08);
+    --circle-transition: 0.3s cubic-bezier(0.2, 0, 0.35, 1.05);
     display: inline-block;
   }
 
@@ -147,7 +147,7 @@
     height: var(--circle-container-diameter);
     background-color: rgba(255, 255, 255, 0.1);
     position: absolute;
-    left: calc(var(--circle-container-offset) + 0.7em);
+    left: calc(var(--circle-container-offset) + 1em);
     top: calc(var(--circle-container-offset) + 0.6em);
     border-radius: var(--container-radius);
     box-shadow:
@@ -158,6 +158,7 @@
     display: flex;
     transition: var(--circle-transition);
     pointer-events: none;
+    will-change: left;
   }
 
   .theme-switch__circle-container::before {
@@ -324,7 +325,7 @@
       4.625em -1.75em 0 0.437em var(--clouds-color),
       4em -0.625em var(--back-clouds-color),
       4.125em -2.125em 0 0.437em var(--back-clouds-color);
-    transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+    transition: var(--transition);
     filter: url(#sketchy-sm);
   }
 
@@ -604,9 +605,6 @@
 </style>
 
 <script>
-  const toggle = document.getElementById("theme-toggle-input") as HTMLInputElement;
-  if (!toggle) throw new Error("Theme toggle input not found");
-
   function getIsDark(): boolean {
     const saved = localStorage.getItem("theme");
     if (saved) return saved === "dark";
@@ -617,21 +615,32 @@
     document.documentElement.classList.toggle("dark", dark);
   }
 
-  const isDark = getIsDark();
-  toggle.checked = isDark;
-  applyTheme(isDark);
+  let cleanupMediaQuery: (() => void) | undefined;
 
-  toggle.addEventListener("change", () => {
-    const dark = toggle.checked;
-    applyTheme(dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  });
+  function initThemeToggle() {
+    const toggle = document.getElementById("theme-toggle-input") as HTMLInputElement | null;
+    if (!toggle) return;
 
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  mediaQuery.addEventListener("change", (e) => {
-    if (!localStorage.getItem("theme")) {
-      toggle.checked = e.matches;
-      applyTheme(e.matches);
-    }
-  });
+    toggle.checked = getIsDark();
+    applyTheme(toggle.checked);
+
+    toggle.addEventListener("change", () => {
+      applyTheme(toggle.checked);
+      localStorage.setItem("theme", toggle.checked ? "dark" : "light");
+    });
+
+    if (cleanupMediaQuery) cleanupMediaQuery();
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem("theme")) {
+        toggle.checked = e.matches;
+        applyTheme(e.matches);
+      }
+    };
+    mediaQuery.addEventListener("change", handler);
+    cleanupMediaQuery = () => mediaQuery.removeEventListener("change", handler);
+  }
+
+  initThemeToggle();
+  document.addEventListener("astro:after-swap", initThemeToggle);
 </script>
