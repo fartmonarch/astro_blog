@@ -617,8 +617,6 @@
 
   let cleanupMediaQuery: (() => void) | undefined;
 
-  let themeInitDone = false;
-
   function initThemeToggle() {
     const toggle = document.getElementById("theme-toggle-input") as HTMLInputElement | null;
     if (!toggle) return;
@@ -629,10 +627,6 @@
       toggle.checked = isDark;
     }
     applyTheme(isDark);
-
-    // 首次初始化绑定事件，后续 astro:after-swap 只同步状态
-    if (themeInitDone) return;
-    themeInitDone = true;
 
     toggle.addEventListener("change", () => {
       applyTheme(toggle.checked);
