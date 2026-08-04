@@ -17,7 +17,7 @@ const lang = getLangFromUrl(Astro.url);
 
 <html lang={lang}>
   <head>
-    <ClientRouter prefetch={{ defaultStrategy: 'viewport' }} />
+    <ClientRouter />
     <BaseHead title={title} description={description} />
   </head>
   <body>

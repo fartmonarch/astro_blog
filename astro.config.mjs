@@ -14,11 +14,16 @@ export default defineConfig({
     },
   },
 
+  prefetch: {
+    defaultStrategy: 'viewport',
+    prefetchAll: true,
+  },
+
   i18n: {
-    defaultLocale: "zh",           
-    locales: ["zh", "en"],         
+    defaultLocale: "zh",
+    locales: ["zh", "en"],
     routing: {
-      prefixDefaultLocale: false   
+      prefixDefaultLocale: false
     }
   },
 
