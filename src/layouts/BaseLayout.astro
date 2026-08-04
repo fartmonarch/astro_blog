@@ -17,7 +17,7 @@ const lang = getLangFromUrl(Astro.url);
 
 <html lang={lang}>
   <head>
-    <ClientRouter prefetch />
+    <ClientRouter prefetch={{ defaultStrategy: 'viewport' }} />
     <BaseHead title={title} description={description} />
   </head>
   <body>
@@ -64,6 +64,8 @@ const lang = getLangFromUrl(Astro.url);
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const isDark = savedTheme ? savedTheme === "dark" : prefersDark;
         document.documentElement.classList.toggle("dark", isDark);
+        const toggle = document.getElementById("theme-toggle-input");
+        if (toggle) toggle.checked = isDark;
       })();
     </script>
   </body>
