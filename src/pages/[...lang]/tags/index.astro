@@ -30,7 +30,7 @@ const tagCounts = posts.reduce<Record<string, number>>((acc, post) => {
 const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
 ---
 
-<BaseLayout title={`你的站点名 | ${t("tags.title")}`} description={t("tags.description")}>
+<BaseLayout title={`${t("tags.title")}`} description={t("tags.description")}>
   <section class="tags-header">
     <h1>{t("tags.title")}</h1>
     <p>{t("tags.description")}</p>

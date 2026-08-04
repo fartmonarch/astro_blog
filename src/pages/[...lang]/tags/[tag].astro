@@ -29,7 +29,7 @@ const posts = await getCollection("blog", (post) => {
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<BaseLayout title={`你的站点名 | #${tag}`} description={`标签 "${tag}" 下的全部文章`}>
+<BaseLayout title={`#${tag}`} description={`标签 "${tag}" 下的全部文章`}>
   <div class="tag-header">
     <a href={getRelativeLocaleUrl(currentLang, "tags")} class="back-link">
       <svg

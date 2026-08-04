@@ -17,7 +17,7 @@ const { lang } = Astro.params;
 const currentLang = lang || defaultLang;
 const t = useTranslations(currentLang as keyof typeof ui);
 
-const pageTitle = `你的站点名 | ${t("home.title")}`;
+const pageTitle = `${t("home.title")}`;
 const pageDescription = t("home.subtitle");
 
 const posts: CollectionEntry<"blog">[] = await getCollection("blog", (post) => {
