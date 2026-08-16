@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: fartmonarch/astro-blog
+  repo: fartmonarch/astro_blog
   branch: main
 
 # 认证：GitHub Personal Access Token（登录页点 "Sign In with Token" 粘贴即可）
