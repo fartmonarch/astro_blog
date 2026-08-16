@@ -1,8 +1,11 @@
 ---
-title: "我的博客创建和运行的框架(ai整理生成)"
-description: "我让ai总结了我的博客创建路程"
-pubDate: "2026-03-16T21:30"
-tags: ["总结"]
+translationKey: ''
+title: 我的博客创建和运行的框架(ai整理生成)(旧版)
+description: 我让ai总结了我的博客创建路程
+pubDate: 2026-03-16T21:30
+updatedDate: ''
+tags:
+  - 总结
 ---
 
 这是我给自己搭的一个“内容可自管理”的博客项目：页面用 Next.js 渲染与路由，内容以静态文件形式存进仓库里；当我想更新文章/图片/配置时，我在前端导入 GitHub App 私钥，前端会直接调用 GitHub API 把内容提交回仓库，然后触发部署更新。本期是ai总结的
@@ -26,13 +29,13 @@ tags: ["总结"]
 我把“文章”当作一组静态资源，统一放在 blogs 下：
 
 - 单篇文章目录：`public/blogs/{slug}/`
-  - 正文：`index.md`
-  - 元信息：`config.json`（标题、日期、标签、摘要、封面、隐藏、分类等）
-  - 图片：同目录下若干图片文件（文件名用 hash，避免重复上传）
+    - 正文：`index.md`
+    - 元信息：`config.json`（标题、日期、标签、摘要、封面、隐藏、分类等）
+    - 图片：同目录下若干图片文件（文件名用 hash，避免重复上传）
 - 全站文章索引：index.json
-  - 列表页会直接请求它（见 use-blog-index.ts）
+    - 列表页会直接请求它（见 use-blog-index.ts）
 - 分类配置：categories.json（你当前打开的就是 categories.json）
-  - 分类读取逻辑见 use-categories.ts
+    - 分类读取逻辑见 use-categories.ts
 
 这样做的好处是：页面渲染只需要读静态文件，速度快、结构直观；内容版本也天然跟着 Git 走。
 
@@ -67,8 +70,8 @@ tags: ["总结"]
 
 - 列表页在 page.tsx，从 `/blogs/index.json` 拉取文章列表并渲染。
 - 详情页在 [src/app/blog/[id]/page.tsx](src/app/blog/[id]/page.tsx)，通过 load-blog.ts 去请求：
-  - `/blogs/{slug}/config.json`
-  - `/blogs/{slug}/index.md`
+    - `/blogs/{slug}/config.json`
+    - `/blogs/{slug}/index.md`
 - RSS 输出在 route.ts，它读取 index.json 来生成 feed。
 - Sitemap 在 sitemap.ts，同样从 index.json 生成文章 URL 列表。
 
@@ -86,8 +89,8 @@ tags: ["总结"]
 - Nginx 配置：反向代理 80 端口到 Next.js（3000）、webhook（9000），并对静态资源做缓存策略
 - 代码部署：克隆 GitHub 代码到 `/var/www/blog-public` → `pnpm install` → `pnpm build`
 - 后台运行服务：
-  - PM2 启动 Next.js：`pm2 start npm --name "blog" -- run "start"`（3000 端口）
-  - PM2 启动 webhook：`pm2 start webhook --name webhook -- -hooks /var/www/blog-public/hooks.json -port 9000`（9000 端口）
+    - PM2 启动 Next.js：`pm2 start npm --name "blog" -- run "start"`（3000 端口）
+    - PM2 启动 webhook：`pm2 start webhook --name webhook -- -hooks /var/www/blog-public/hooks.json -port 9000`（9000 端口）
 - 配置开机自启：`pm2 save && pm2 startup` + `systemctl enable nginx`
 - GitHub WebHook 配置：Payload URL 填 `http://我的域名或IP/hooks/deploy`（走 Nginx 的 80 端口），触发推送事件
 - 自动更新链路：本地推送 → GitHub → Nginx 转发 → webhook 触发脚本 → 拉取代码/重构 → PM2 重启服务 → Nginx 对外提供访问
@@ -126,4 +129,3 @@ pm2 restart blog
 ```
 
 写到这里，这条“自建云服务器”链路对我来说就闭环了：内容一旦写回仓库（无论是我在前端发布，还是我本地 push），服务器都会自动同步并更新线上站点。
-
