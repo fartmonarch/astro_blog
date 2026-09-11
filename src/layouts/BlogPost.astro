@@ -2,12 +2,24 @@
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
+import { UNCATEGORIZED } from "../config";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings?: MarkdownHeading[];
 };
 
-const { title, description, pubDate, updatedDate, tags, headings = [] } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  categories = [],
+  tags = [],
+  headings = [],
+} = Astro.props;
+
+// 分类与标签重名时去重，避免同一篇里显示两遍
+const displayTags = tags.filter((tag) => !categories.includes(tag));
 
 const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
@@ -45,17 +57,34 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
             )
           }
         </div>
-        {
-          tags && tags.length > 0 && (
-            <div class="tags">
-              {tags.map((tag: string) => (
-                <a href={`/tags/${tag}/`} class="tag">
-                  #{tag}
+        <div class="taxonomy">
+          <div class="taxonomy-row">
+            <span class="taxonomy-label">分类</span>
+            {
+              categories.length > 0 ? (
+                categories.map((category: string) => (
+                  <a href={`/tags/${category}/`} class="tag">
+                    #{category}
+                  </a>
+                ))
+              ) : (
+                <a href={`/tags/${UNCATEGORIZED}/`} class="tag">
+                  #{UNCATEGORIZED}
                 </a>
-              ))}
-            </div>
-          )
-        }
+              )
+            }
+          </div>
+          {
+            displayTags.length > 0 && (
+              <div class="taxonomy-row">
+                <span class="taxonomy-label">标签</span>
+                {displayTags.map((tag: string) => (
+                  <span class="tag tag-muted">{tag}</span>
+                ))}
+              </div>
+            )
+          }
+        </div>
       </header>
       <div class="content">
         <slot />
@@ -120,11 +149,24 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     gap: 0.5rem 1.5rem;
     margin-bottom: 1rem;
   }
-  .tags {
+  .taxonomy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .taxonomy-row {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
     gap: 0.5rem;
+  }
+  .taxonomy-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-right: 0.15rem;
   }
   .tag {
     font-size: 0.85rem;
@@ -141,6 +183,17 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     border-color: var(--accent);
     color: var(--tag-hover-color);
     transform: translateY(-1px);
+  }
+  /* 仅展示的标签：不可点，弱化处理（写在 .tag:hover 之后覆盖它） */
+  .tag-muted {
+    color: var(--text-secondary);
+    background-color: transparent;
+  }
+  .tag-muted:hover {
+    background-color: transparent;
+    border-color: var(--card-border);
+    color: var(--text-secondary);
+    transform: none;
   }
   .content {
     line-height: 1.8;

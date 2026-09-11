@@ -2,17 +2,21 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
+import { CATEGORIES, UNCATEGORIZED } from "../../config";
 
 const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 
-const tagCounts = posts.reduce<Record<string, number>>((acc, post) => {
-  (post.data.tags || []).forEach((tag) => {
-    acc[tag] = (acc[tag] || 0) + 1;
-  });
-  return acc;
-}, {});
+// 只有 categories 才参与分类统计；tags 仅作展示，不在这里出现
+const countByCategory = (category: string) =>
+  posts.filter((post) => (post.data.categories ?? []).includes(category)).length;
 
-const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const uncategorizedCount = posts.filter((post) => (post.data.categories ?? []).length === 0).length;
+
+// 按白名单固定顺序展示（0 篇的也列出并置灰，方便知道有哪些分类可用）
+const categoryCards = CATEGORIES.map((category) => ({
+  name: category,
+  count: countByCategory(category),
+}));
 ---
 
 <BaseLayout title="分类标签" description="按主题探索文章。">
@@ -21,22 +25,20 @@ const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
     <p>按主题探索文章。</p>
   </section>
   <section class="tags-container">
-    {
-      sortedTags.length > 0 ? (
-        <div class="tags-grid">
-          {sortedTags.map(([tag, count]) => (
-            <a href={`/tags/${tag}/`} class="tag-card">
-              <span class="tag-name">#{tag}</span>
-              <span class="tag-count">
-                {count} 篇
-              </span>
-            </a>
-          ))}
-        </div>
-      ) : (
-        <p>暂无标签。</p>
-      )
-    }
+    <div class="tags-grid">
+      <a href={`/tags/${UNCATEGORIZED}/`} class="tag-card">
+        <span class="tag-name">#{UNCATEGORIZED}</span>
+        <span class="tag-count">{uncategorizedCount} 篇</span>
+      </a>
+      {
+        categoryCards.map(({ name, count }) => (
+          <a href={`/tags/${name}/`} class={`tag-card${count === 0 ? " is-empty" : ""}`}>
+            <span class="tag-name">#{name}</span>
+            <span class="tag-count">{count} 篇</span>
+          </a>
+        ))
+      }
+    </div>
   </section>
 </BaseLayout>
 
@@ -63,6 +65,13 @@ const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
     background: var(--card-hover-bg);
     border-color: var(--light);
     transform: translateY(-2px);
+  }
+  /* 0 篇的分类：置灰但仍然可点，方便知道白名单里有哪些分类可用 */
+  .tag-card.is-empty {
+    opacity: 0.45;
+  }
+  .tag-card.is-empty:hover {
+    opacity: 0.8;
   }
   .tag-name {
     font-size: 1.2rem;

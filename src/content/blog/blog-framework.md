@@ -41,12 +41,14 @@ src/content/blog/
 title: "我的新博客创建和运行的框架（新版）"
 description: "文章摘要，用于列表页和 SEO"
 pubDate: "2026-08-16"
-tags: ["博客构造"]
+categories: ["博客建设"]   # 真正用于归类的分类（受控白名单，最多 3 个）；留空 = 未分类
+tags: ["博客构造"]          # 仅展示的关键词，不生成页面、不可点击
 ---
 ```
 
 - 列表页、归档、标签、RSS 全部由 Astro 在构建时从文件自动生成，**不需要手动维护任何索引文件**（旧版需要 index.json / categories.json 两个索引）
 - 只有中文一种语言：所有文章平铺在 `src/content/blog/` 下，**文件名就是 URL 里的 slug**（所以用英文短横线命名，如 `nginx-reverse-proxy.md`），标题在 frontmatter 的 `title` 里爱怎么写就怎么写
+- **分类与标签是两层东西**：`categories` 是受控的分类（从 4 个白名单里选，最多 3 个），决定文章进哪个分类页 `/tags/<分类>/`、详情页里哪个 chip 能点；`tags` 退化成纯展示的关键词，不生成页面、不可点击。两个字段都可以留空，**分类留空就是「未分类」**，会出现在 `/tags/未分类/`，随时可以回来补
 - 图片两种形态：图床外链（日常写作走 COS）和仓库本地（public/images/，迁移自旧博客）
 
 ## 3. 我是怎么"写一篇文章并发布"的（四种入口，殊途同归）
@@ -73,7 +75,7 @@ Obsidian（预留）──┘
 
 旧博客的 9 篇文章和 16 张图片整体迁移到了新仓库（具体迁移工程旧文已述，这里只列结果）：
 
-- 统一为 Markdown + frontmatter 格式，category 并入 tags
+- 统一为 Markdown + frontmatter 格式，旧的 category 字段先并入 tags（后来重新拆出了独立的 categories，见第 2 节）
 - 中文目录名映射成 ASCII slug，URL 干净
 - 图片落地到 public/images/，正文路径改写为本地引用（后续升级 COS）
 - 迁移脚本 scripts/migrate-old-blog.ps1 可复现
@@ -127,6 +129,7 @@ Vercel 默认分配的 `*.vercel.app` 域名在国内基本无法直接访问，
 - **仓库名手滑**：config.yml 里 repo 名写错下划线/连字符，CMS 直接报"无访问权限"（本质是 GitHub 404 的另一种翻译），排查半天才发现是名字问题
 - **CMS 把空字段写成 `''`**：Sveltia 保存文章会重写 frontmatter，空的可选字段会变成空字符串，zod 4 会把 Invalid Date 判为类型错误导致构建失败，需要在 schema 里用 `z.preprocess` 把空串转 `undefined` 根治
 - **双语功能是给自己加的负担**：一开始按 `zh/` `en/` 分目录 + `translationKey` 关联做了中英双语，结果英文一篇没写、`translationKey` 实际上没有任何代码读取、导航栏的 EN 按钮也只是跳首页。后来整体删掉了：目录拍平、`[...lang]` 动态路由换成普通路由、i18n 工具目录移除、语言切换按钮去掉，写作从此只需要一份中文
+- **标签泛滥成假分类**：早期把细粒度关键词全塞进同一个 `tags` 字段，结果 16 个标签里 13 个只用过一次，每篇详情页却挂着一排可点的"分类"。后来拆成"受控分类 + 仅展示标签"两层，并引入"未分类"状态（用空值表示，不占白名单），顺带修掉了 CMS 字段 `required` 默认 `true` 导致强制填标签的问题
 
 ## 8. 结语
 

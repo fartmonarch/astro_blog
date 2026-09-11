@@ -15,6 +15,8 @@ export async function GET(context: any) {
       pubDate: post.data.pubDate,
       description: post.data.description,
       link: `/blog/${post.id}/`,
+      // 只输出分类（真正用于归类的那一层）；tags 仅作站内展示
+      categories: post.data.categories,
     })),
   });
 }

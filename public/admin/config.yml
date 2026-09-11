@@ -29,5 +29,6 @@ collections:
       - { label: "描述", name: "description", widget: "text" }
       - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
       - { label: "更新日期（可选）", name: "updatedDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { label: "标签", name: "tags", widget: "list", default: [] }
+      - { label: "分类", name: "categories", widget: "select", multiple: true, min: 0, max: 3, required: false, default: [], options: ["技术笔记", "博客建设", "生活记录", "问题排查"], hint: "留空 = 未分类，之后可以随时回来补。只有这里选中的分类才会生成分类页面。" }
+      - { label: "标签（仅展示，不参与分类）", name: "tags", widget: "list", default: [], required: false, hint: "只做关键词展示，不会生成分类页面。" }
       - { label: "正文", name: "body", widget: "markdown" }

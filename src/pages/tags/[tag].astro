@@ -1,20 +1,26 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import { CATEGORIES, UNCATEGORIZED } from "../../config";
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection("blog");
-  const tags = allPosts.flatMap((post) => post.data.tags || []);
-  return Array.from(new Set(tags)).map((tag) => ({ params: { tag } }));
+  // 只给"分类"生成页面：白名单 + 虚拟的未分类页。
+  // 旧的细粒度标签不再生成页面，访问旧链接会走 404。
+  return [...CATEGORIES, UNCATEGORIZED].map((tag) => ({ params: { tag } }));
 }
 
-const { tag } = Astro.params;
+const tag = Astro.params.tag ?? "";
 
-const posts = await getCollection("blog", (post) => (post.data.tags || []).includes(tag));
+const posts = await getCollection("blog", (post) => {
+  const categories = post.data.categories ?? [];
+  return tag === UNCATEGORIZED ? categories.length === 0 : categories.includes(tag);
+});
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const pageDescription = tag === UNCATEGORIZED ? "还没归类的文章。" : `分类「${tag}」下的全部文章`;
 ---
 
-<BaseLayout title={`#${tag}`} description={`标签 "${tag}" 下的全部文章`}>
+<BaseLayout title={`#${tag}`} description={pageDescription}>
   <div class="tag-header">
     <a href="/tags/" class="back-link">
       <svg
@@ -57,7 +63,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
           })}
         </ul>
       ) : (
-        <p>该标签下暂无文章。</p>
+        <p>该分类下暂无文章。</p>
       )
     }
   </section>
