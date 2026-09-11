@@ -1,31 +1,14 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Profile from "../../components/Profile.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Profile from "../components/Profile.astro";
 import { getCollection } from "astro:content";
-import { ui, defaultLang } from "../../i18n/ui";
-import { useTranslations } from "../../i18n/utils";
 import type { CollectionEntry } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 
-export function getStaticPaths() {
-  return Object.keys(ui).map((lang) => {
-    return { params: { lang: lang === defaultLang ? undefined : lang } };
-  });
-}
+const pageTitle = "沫之白的小窝";
+const pageDescription = "一个极简 Astro 博客主题，剥离干扰，拉近作者与读者的距离。";
 
-const { lang } = Astro.params;
-const currentLang = lang || defaultLang;
-const t = useTranslations(currentLang as keyof typeof ui);
-
-const pageTitle = `${t("home.title")}`;
-const pageDescription = t("home.subtitle");
-
-const posts: CollectionEntry<"blog">[] = await getCollection("blog", (post) => {
-  return post.id.startsWith(`${currentLang}/`);
-});
+const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →";
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -35,18 +18,17 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
     </aside>
     <div class="content-area">
       <section class="recent-posts">
-        <h2>{t("nav.archive")}</h2>
+        <h2>归档</h2>
         <div class="posts-container">
           <ul>
             {
               posts.map((post) => {
-                const slugWithoutLang = post.id.replace(`${currentLang}/`, "");
                 return (
                   <li>
-                    <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
+                    <a href={`/blog/${post.id}/`}>
                       <span class="title">{post.data.title}</span>
                       <span class="date">
-                        {post.data.pubDate.toLocaleDateString(currentLang, {
+                        {post.data.pubDate.toLocaleDateString("zh-CN", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
@@ -59,8 +41,8 @@ const archiveLabel = currentLang === "zh" ? "全部文章 →" : "All posts →"
             }
           </ul>
           <div class="fade-more">
-            <a href={getRelativeLocaleUrl(currentLang, "archive")} class="more-link">
-              {archiveLabel}
+            <a href="/archive/" class="more-link">
+              全部文章 →
             </a>
           </div>
         </div>

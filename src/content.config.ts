@@ -16,7 +16,6 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: optionalDate,
     tags: z.array(z.string()).default([]),
-    translationKey: z.string().optional(),
   }),
 });
 

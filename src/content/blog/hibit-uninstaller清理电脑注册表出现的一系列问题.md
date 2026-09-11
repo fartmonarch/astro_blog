@@ -1,5 +1,4 @@
 ---
-translationKey: ''
 title: HiBit Uninstaller清理电脑注册表出现的一系列问题
 description: HiBit Uninstaller的清理注册表给我电脑带来了很多体验上的问题，今天上网查各个攻略总算给我解决了
 pubDate: 2026-08-17

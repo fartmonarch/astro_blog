@@ -2,16 +2,12 @@
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
-import { useTranslations, getLangFromUrl } from "../i18n/utils";
-import { getRelativeLocaleUrl } from "astro:i18n";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings?: MarkdownHeading[];
 };
 
 const { title, description, pubDate, updatedDate, tags, headings = [] } = Astro.props;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
@@ -23,10 +19,10 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
         <h1>{title}</h1>
         <div class="meta">
           <span>
-            {t("post.publishedOn")}
+            发布时间：
             <time datetime={pubDate.toISOString()}>
               {
-                pubDate.toLocaleDateString(lang, {
+                pubDate.toLocaleDateString("zh-CN", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -37,9 +33,9 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
           {
             updatedDate && (
               <span class="updated">
-                {t("post.updatedOn")}{" "}
+                最后更新：{" "}
                 <time datetime={updatedDate.toISOString()}>
-                  {updatedDate.toLocaleDateString(lang, {
+                  {updatedDate.toLocaleDateString("zh-CN", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -53,7 +49,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
           tags && tags.length > 0 && (
             <div class="tags">
               {tags.map((tag: string) => (
-                <a href={getRelativeLocaleUrl(lang, `tags/${tag}`)} class="tag">
+                <a href={`/tags/${tag}/`} class="tag">
                   #{tag}
                 </a>
               ))}
@@ -70,7 +66,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
       tocHeadings.length > 0 && (
         <aside class="toc-sidebar">
           <nav class="toc">
-            <p class="toc-title">{t("toc.title")}</p>
+            <p class="toc-title">目录</p>
             <ul>
               {tocHeadings.map((heading) => (
                 <li class={`toc-item depth-${heading.depth}`}>

@@ -6,14 +6,8 @@ export const SITE_CONFIG = {
 
 export const AUTHOR = {
   name: "沫之白",
-  role: {
-    zh: "开发者 | 写作者 | 思考者",
-    en: "Developer | Writer | Thinker",
-  },
-  bio: {
-    zh: "你好，欢迎来到我的个人blog。",
-    en: "Welcome! It is my blog.",
-  },
+  role: "开发者 | 写作者 | 思考者",
+  bio: "你好，欢迎来到我的个人blog。",
   avatar: "/avatar.png",
 };
 

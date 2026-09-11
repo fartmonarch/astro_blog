@@ -1,37 +1,22 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { ui, defaultLang } from "../../../i18n/ui";
-import { useTranslations } from "../../../i18n/utils";
-import type { CollectionEntry } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("blog");
-  const paths = allPosts.flatMap((post) => {
-    const [postLang] = post.id.split("/");
-    const lang = postLang === defaultLang ? undefined : postLang;
-    return (post.data.tags || []).map((tag) => ({ params: { lang, tag } }));
-  });
-  const uniquePaths = Array.from(
-    new Map(paths.map((p) => [`${p.params.lang || "default"}-${p.params.tag}`, p.params])).values(),
-  );
-  return uniquePaths.map((p) => ({ params: { lang: p.lang, tag: p.tag } }));
+  const tags = allPosts.flatMap((post) => post.data.tags || []);
+  return Array.from(new Set(tags)).map((tag) => ({ params: { tag } }));
 }
 
-const { lang, tag } = Astro.params;
-const currentLang = lang || defaultLang;
-const t = useTranslations(currentLang as keyof typeof ui);
+const { tag } = Astro.params;
 
-const posts = await getCollection("blog", (post) => {
-  return post.id.startsWith(`${currentLang}/`) && (post.data.tags || []).includes(tag);
-});
+const posts = await getCollection("blog", (post) => (post.data.tags || []).includes(tag));
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout title={`#${tag}`} description={`标签 "${tag}" 下的全部文章`}>
   <div class="tag-header">
-    <a href={getRelativeLocaleUrl(currentLang, "tags")} class="back-link">
+    <a href="/tags/" class="back-link">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="18"
@@ -46,7 +31,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
-      {t("tags.title")}
+      分类标签
     </a>
     <h1>#{tag}</h1>
   </div>
@@ -55,13 +40,12 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
       posts.length > 0 ? (
         <ul>
           {posts.map((post) => {
-            const slugWithoutLang = post.id.replace(`${currentLang}/`, "");
             return (
               <li>
-                <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
+                <a href={`/blog/${post.id}/`}>
                   <span class="title">{post.data.title}</span>
                   <span class="date">
-                    {post.data.pubDate.toLocaleDateString(currentLang, {
+                    {post.data.pubDate.toLocaleDateString("zh-CN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",

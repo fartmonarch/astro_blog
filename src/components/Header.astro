@@ -1,40 +1,21 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
-import { languages } from "../i18n/ui";
 import { SITE_CONFIG } from "../config";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import ThemeToggle from "./ThemeToggle.astro";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 ---
 
 <header class="site-header">
   <nav>
     <div class="logo">
-      <a href={getRelativeLocaleUrl(lang, "")}>{SITE_CONFIG.title}</a>
+      <a href="/">{SITE_CONFIG.title}</a>
     </div>
     <div class="links">
-      <a href={getRelativeLocaleUrl(lang, "")}>{t("nav.home")}</a>
-      <a href={getRelativeLocaleUrl(lang, "archive")}>{t("nav.archive")}</a>
-      <a href={getRelativeLocaleUrl(lang, "tags")}>{t("nav.tags")}</a>
-      <a href={getRelativeLocaleUrl(lang, "about")}>{t("nav.about")}</a>
+      <a href="/">首页</a>
+      <a href="/archive/">归档</a>
+      <a href="/tags/">标签</a>
+      <a href="/about/">关于</a>
     </div>
     <div class="nav-actions">
       <ThemeToggle />
-      <div class="lang-switcher">
-        <ul>
-          {
-            Object.entries(languages).map(([abbr]) => (
-              <li>
-                <a href={getRelativeLocaleUrl(abbr, "")} class={lang === abbr ? "active" : ""}>
-                  {abbr.toUpperCase()}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
     </div>
   </nav>
 </header>
@@ -85,28 +66,6 @@ const t = useTranslations(lang);
     gap: 2rem;
     margin-left: auto;
     flex-shrink: 0;
-  }
-  .lang-switcher ul {
-    display: flex;
-    gap: 0.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .lang-switcher a {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--lang-switcher-color);
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-  }
-  .lang-switcher a:hover {
-    color: var(--heading-color);
-    background: var(--lang-switcher-hover-bg);
-  }
-  .lang-switcher a.active {
-    color: var(--heading-color);
-    background: var(--accent);
   }
   @media (min-width: 640px) {
     nav {

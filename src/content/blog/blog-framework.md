@@ -17,7 +17,6 @@ tags: ["博客构造"]
 | 内容 | Content Collections（Markdown/MDX + zod schema 校验） |
 | 部署 | Vercel（Git 集成，push 即自动构建）+ Cloudflare CDN（国内可直连） |
 | 域名 | fartmonarch.xyz（DNS 托管在 Cloudflare） |
-| 语言 | 中英双语（中文无前缀 / 英文带 /en/） |
 | 图片 | 腾讯云 COS 图床（PicGo 粘贴即传，外链引用） |
 
 页面结构：首页（侧栏简介 + 最近文章）、归档、文章页（自动目录 + 代码复制按钮）、标签页、关于、RSS、404。样式用纯 CSS 变量实现亮暗双主题，字体 Atkinson 本地化部署，图标走 astro-icon。
@@ -30,12 +29,9 @@ tags: ["博客构造"]
 
 ```
 src/content/blog/
-├── zh/                          ← 中文（URL 无前缀）
-│   ├── blog-framework.md
-│   ├── ai-concepts.md
-│   └── ...
-└── en/                          ← 英文（URL 带 /en/）
-    └── hello-world.md
+├── blog-framework.md
+├── ai-concepts.md
+└── ...
 ```
 
 每篇文章的 frontmatter 长这样：
@@ -46,12 +42,11 @@ title: "我的新博客创建和运行的框架（新版）"
 description: "文章摘要，用于列表页和 SEO"
 pubDate: "2026-08-16"
 tags: ["博客构造"]
-translationKey: "blog-framework"   # 中英版本共用同一个 key 来关联
 ---
 ```
 
 - 列表页、归档、标签、RSS 全部由 Astro 在构建时从文件自动生成，**不需要手动维护任何索引文件**（旧版需要 index.json / categories.json 两个索引）
-- 中英双语靠 i18n 路由 + translationKey 关联，默认中文无前缀，英文走 /en/
+- 只有中文一种语言：所有文章平铺在 `src/content/blog/` 下，**文件名就是 URL 里的 slug**（所以用英文短横线命名，如 `nginx-reverse-proxy.md`），标题在 frontmatter 的 `title` 里爱怎么写就怎么写
 - 图片两种形态：图床外链（日常写作走 COS）和仓库本地（public/images/，迁移自旧博客）
 
 ## 3. 我是怎么"写一篇文章并发布"的（四种入口，殊途同归）
@@ -131,6 +126,7 @@ Vercel 默认分配的 `*.vercel.app` 域名在国内基本无法直接访问，
 - **Sveltia 早期不识别 .mdx**（GitHub Issue #79，旧版 0.8.4 的 bug，现已修复）：当前策略是 CMS 管 .md、VSCode 管 .mdx，两者互不干扰
 - **仓库名手滑**：config.yml 里 repo 名写错下划线/连字符，CMS 直接报"无访问权限"（本质是 GitHub 404 的另一种翻译），排查半天才发现是名字问题
 - **CMS 把空字段写成 `''`**：Sveltia 保存文章会重写 frontmatter，空的可选字段会变成空字符串，zod 4 会把 Invalid Date 判为类型错误导致构建失败，需要在 schema 里用 `z.preprocess` 把空串转 `undefined` 根治
+- **双语功能是给自己加的负担**：一开始按 `zh/` `en/` 分目录 + `translationKey` 关联做了中英双语，结果英文一篇没写、`translationKey` 实际上没有任何代码读取、导航栏的 EN 按钮也只是跳首页。后来整体删掉了：目录拍平、`[...lang]` 动态路由换成普通路由、i18n 工具目录移除、语言切换按钮去掉，写作从此只需要一份中文
 
 ## 8. 结语
 

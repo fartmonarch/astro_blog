@@ -1,14 +1,8 @@
 ---
-import { getLangFromUrl } from "../i18n/utils";
 import { AUTHOR } from "../config";
 
 const today = new Date();
-const lang = getLangFromUrl(Astro.url);
-const footerText = {
-  zh: "极简。实用。值得分享。",
-  en: "Minimal. Practical. Worth Sharing.",
-};
-const text = footerText[lang as keyof typeof footerText] || footerText.en;
+const text = "极简。实用。值得分享。";
 ---
 
 <footer class="site-footer">

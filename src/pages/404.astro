@@ -1,19 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getLangFromUrl } from "../i18n/utils";
-
-const lang = getLangFromUrl(Astro.url);
-const isZh = lang === "zh";
 
 const content = {
-  title: isZh ? "404 | 页面未找到" : "404 | Page Not Found",
+  title: "404 | 页面未找到",
   heading: "404",
-  sub: isZh ? "页面未找到。" : "Page not found.",
-  body: isZh
-    ? "您寻找的页面可能已被移动、删除，或者从未存在过。有时候，迷路也是一种开始。"
-    : "The page you're looking for may have been moved, deleted, or never existed.",
-  home: isZh ? "返回首页" : "Return home",
-  archive: isZh ? "浏览文章" : "Browse posts",
+  sub: "页面未找到。",
+  body: "您寻找的页面可能已被移动、删除，或者从未存在过。有时候，迷路也是一种开始。",
+  home: "返回首页",
+  archive: "浏览文章",
 };
 ---
 
@@ -23,8 +17,8 @@ const content = {
     <h1>{content.sub}</h1>
     <p>{content.body}</p>
     <div class="actions">
-      <a href={`/${lang}/`}>{content.home}</a>
-      <a href={`/${lang}/archive/`} class="secondary">{content.archive}</a>
+      <a href="/">{content.home}</a>
+      <a href="/archive/" class="secondary">{content.archive}</a>
     </div>
   </div>
 </BaseLayout>

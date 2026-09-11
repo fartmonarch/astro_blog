@@ -1,27 +1,12 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { ui, defaultLang } from "../../i18n/ui";
-import { useTranslations } from "../../i18n/utils";
 import type { CollectionEntry } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 
-export function getStaticPaths() {
-  return Object.keys(ui).map((lang) => {
-    return { params: { lang: lang === defaultLang ? undefined : lang } };
-  });
-}
+const pageTitle = "沫之白的blogs";
+const pageDescription = "过去到现在所有的思考与笔记。";
 
-const { lang } = Astro.params;
-const currentLang = lang || defaultLang;
-const t = useTranslations(currentLang as keyof typeof ui);
-
-const pageTitle = `${t("archive.title")}`;
-const pageDescription = t("archive.description");
-
-const posts: CollectionEntry<"blog">[] = await getCollection("blog", (post) => {
-  return post.id.startsWith(`${currentLang}/`);
-});
+const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const postsByYear = posts.reduce<Record<number, CollectionEntry<"blog">[]>>((acc, post) => {
@@ -38,8 +23,8 @@ const years = Object.keys(postsByYear)
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   <section class="archive-header">
-    <h1>{t("archive.title")}</h1>
-    <p>{t("archive.description")}</p>
+    <h1>{pageTitle}</h1>
+    <p>{pageDescription}</p>
   </section>
   <section class="archive-list">
     {
@@ -48,13 +33,12 @@ const years = Object.keys(postsByYear)
           <h2 class="year-label">{year}</h2>
           <ul>
             {postsByYear[year].map((post) => {
-              const slugWithoutLang = post.id.replace(`${currentLang}/`, "");
               return (
                 <li>
-                  <a href={getRelativeLocaleUrl(currentLang, `blog/${slugWithoutLang}`)}>
+                  <a href={`/blog/${post.id}/`}>
                     <span class="title">{post.data.title}</span>
                     <span class="date">
-                      {post.data.pubDate.toLocaleDateString(currentLang, {
+                      {post.data.pubDate.toLocaleDateString("zh-CN", {
                         month: "long",
                         day: "numeric",
                       })}
