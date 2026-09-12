@@ -21,7 +21,11 @@ collections:
     delete: true
     extension: md
     format: frontmatter
-    slug: "{{slug}}"
+    # {{fields._slug}} 是 Sveltia 的特殊 token：编辑器里会多出一个必填的 Slug 输入框，
+    # 新建文章时直接填英文短横线，省掉「先保存、再 ⋮ → Edit Slug 改名」这一步。
+    # 保存前会校验：不能为空、不能含 "/" 或空格、不能与已有文章重名。
+    # 想退回按标题自动生成文件名，改回 slug: "{{slug}}"
+    slug: "{{fields._slug}}"
     editor:
       preview: false          # Astro 无现成预览 iframe，关闭避免报错
     fields:
@@ -29,6 +33,6 @@ collections:
       - { label: "描述", name: "description", widget: "text" }
       - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
       - { label: "更新日期（可选）", name: "updatedDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { label: "分类", name: "categories", widget: "select", multiple: true, min: 0, max: 3, required: false, default: [], options: ["技术笔记", "博客建设", "生活记录", "问题排查"], hint: "留空 = 未分类，之后可以随时回来补。只有这里选中的分类才会生成分类页面。" }
-      - { label: "标签（仅展示，不参与分类）", name: "tags", widget: "list", default: [], required: false, hint: "只做关键词展示，不会生成分类页面。" }
+      - { label: "分类", name: "categories", widget: "select", multiple: true, min: 0, max: 3, required: false, default: [], options: ["实习笔记","前端笔记","服务端笔记","运维笔记","电脑知识","Agent"], hint: "留空 = 未分类，之后可以随时回来补。只有这里选中的分类才会生成分类页面。" }
+      - { label: "标签", name: "tags", widget: "list", default: [], required: false, hint: "只做关键词展示，不会生成分类页面。" }
       - { label: "正文", name: "body", widget: "markdown" }

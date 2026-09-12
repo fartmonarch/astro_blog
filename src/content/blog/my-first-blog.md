@@ -2,6 +2,9 @@
 title: 我的博客创建和运行的框架(ai整理生成)(旧版)
 description: 我让ai总结了我的博客创建路程
 pubDate: 2026-03-16T21:30
+updatedDate: ''
+categories:
+  - 运维笔记
 tags:
   - 总结
 ---

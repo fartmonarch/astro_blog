@@ -1,8 +1,13 @@
 ---
-title: " DNS浅解"
-description: "经常遇到这个DNS，了解一下"
-pubDate: "2025-10-03T10:44"
-tags: ["学习笔记", "计算机网络"]
+title: DNS浅解
+description: 经常遇到这个DNS，了解一下
+pubDate: 2025-10-03T10:44
+updatedDate: ''
+categories:
+  - 运维笔记
+tags:
+  - 学习笔记
+  - 计算机网络
 ---
 
 > 相信不少朋友都有经历过，电脑能打开qq但是无法打开网页的情况去网络上寻找解决攻略时，大致都是说到"DNS解析错误"，"DNS服务器出问题了"，这DNS到底是个啥
@@ -15,6 +20,7 @@ tags: ["学习笔记", "计算机网络"]
 
 DNS也是同理，我们平时访问一个网站，可以直接通过它的ip地址来访问，也可以通过域名来访问。DNS就是好比把域名对应上ip，它的官方名字是域名解析协议（Domain Name System）。
 ![](https://pic1.zhimg.com/80/e5143bc08d4ec9d7f210522c7e540f4d_hd.jpg)
+
 ### DNS服务的作用和过程
 
 * 将域名解析为IP 地址

@@ -1,8 +1,13 @@
 ---
-title: "jQuery学习笔记"
-description: "记录当时学jQuery的笔记"
-pubDate: "2025-07-04T09:09"
-tags: ["总结", "学习笔记"]
+title: jQuery学习笔记
+description: 记录当时学jQuery的笔记
+pubDate: 2025-07-04T09:09
+updatedDate: ''
+categories:
+  - 前端笔记
+tags:
+  - 总结
+  - 学习笔记
 ---
 
 ## **jQuery基础**
@@ -33,8 +38,6 @@ $('#name').html("Hello 体验 jQuery")
     $("span").html("jQuery元素选择器")
     // ID选择器(具有唯一性)
     $("#it").html("jQuery ID选择器")
-
-
 ```
 
 ### **子代选择器**
@@ -58,7 +61,7 @@ $(".topnav > li").css("border","3px solid red")
 
 ### **后代选择器**
 
-```
+```plain
 // 2. 给所有ul标签下的li标签添加一个边框（后代元素）
 var topnav = document.getElementsByClassName("topnav")[0];
 var children = topnav.getElementsByTagName("li");
@@ -69,8 +72,6 @@ for(var i = 0;i<children.length;i++){
 // jQuery后代元素选择器
 $(".topnav li").css("border","3px solid red")
 ```
-
-
 
 ### **属性选择器（一）**
 
@@ -135,7 +136,6 @@ Attribute Selector [name^="value"]
   <script>$('input[name^="sxt"]').val('study!');</script>
     //第一个和第二个匹配
 </body>
-
 ```
 
 ### **jQuery选择器(一)**
@@ -242,17 +242,15 @@ Attribute Selector [name^="value"]
 
   给元素添加class，值得注意的是这个方法不会替换一个样式类名。它只是简单的添加一个样式类名到元素上
 
-  ```html
+```html
   $("p").addClass("myClass");
-  ```
+```
 
   也可以同时添加多个class
 
-  ```html
+```html
   $("p").addClass("myClass1 myClass2");
-  ```
-
-  
+```
 
 - ### removeClass()
 
@@ -260,36 +258,36 @@ Attribute Selector [name^="value"]
 
   通过class名字移除元素
 
-  ```
+```plain
   $('p').removeClass('myClass yourClass')
-  ```
+```
 
   移除全部class
 
-  ```
+```plain
   $('p').removeClass()
-  ```
+```
 
   配合addClass() 一起使用用来切换元素的样式
 
-  ```html
+```html
   $('p').removeClass('myClass noClass').addClass('yourClass');
-  ```
+```
 
 - ### toggleClass()
 
   这是一个开关方法，如果class存在则删除，如果class不存在则添加
 
-  ```
+```plain
   $('#foo').toggleClass(className, addOrRemove);
-  ```
+```
 
 - ### hasClass()
 
   判断一个元素上是否具有某个class
 
-  ```
-  <!doctype html>
+```plain
+ <!doctype html>
   <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -306,7 +304,7 @@ Attribute Selector [name^="value"]
     </script>
   </body>
   </html>
-  ```
+```
 
 ### **DOM操作(二)**
 
@@ -328,28 +326,26 @@ Attribute Selector [name^="value"]
 
   获取元素中的内容但是直接读成字符串 识别不了html内容
 
-  ```
-  //与上面html()出来内容相同
+```plain
+ //与上面html()出来内容相同
   $('div.demo-container').text();
   
   
   //元素内直接设置字符串"<p>All new content. <em>You bet!</em></p>"
   $('div.demo-container').html('<p>All new content. <em>You bet!</em></p>');
-  ```
-
-  
+```
 
 - ### val()
 
 ​	用于获取`<input>`标签中的内容
 
-```
+```plain
 $(".input").val();
 ```
 
 ​	也可以设置`<input>`标签内容
 
-```
+```plain
 $(".input").val("username")
 ```
 
@@ -357,7 +353,7 @@ $(".input").val("username")
 
 ​	获取匹配的元素的属性的值 或 设置匹配元素的一个或多个属性
 
-```
+```plain
 <!DOCTYPE html>
 <html>
 <head>
@@ -392,7 +388,7 @@ $(".input").val("username")
 
 ​	为匹配的元素集合中的每个元素中移除一个属性（attribute）	
 
-```
+```plain
 img.removeAttr("title")
 ```
 
@@ -404,15 +400,12 @@ img.removeAttr("title")
 - **.unwrap()**
 - **.wrapAll()**
 - **.wrapInner()**
-
-
-
 - #### .wrap()
 
   在每个匹配的元素外层包上一个html元素
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -424,14 +417,14 @@ img.removeAttr("title")
     </script>
   </body>
   </html>
-  ```
+```
 
 - #### .unwrap()
 
   将匹配元素集合的父级元素删除，保留自身在原来的位置
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -445,14 +438,14 @@ img.removeAttr("title")
     </script>
   </body>
   </html>
-  ```
+```
 
 - #### .wrapAll()
 
   在所有匹配元素外面包一层HTML结构
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
    <style>
@@ -469,14 +462,14 @@ img.removeAttr("title")
       $("p").wrapAll("<div></div>");
     </script>
   </body>
-  ```
+```
 
 - #### .wrapInner()
 
   在匹配元素里的内容外包一层结构
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
     <style>
@@ -493,7 +486,7 @@ img.removeAttr("title")
     <script>$("p").wrapInner("<b></b>");</script>
   </body>
   </html>
-  ```
+```
 
 ### **DOM操作(四)**
 
@@ -501,15 +494,12 @@ img.removeAttr("title")
 
 - **.append()**
 - **.prepend()**
-
-
-
 - .append()
 
   在每个匹配元素里面的末尾处插入参数内容
 
-  ```html
-  <!DOCTYPE html>
+```html
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -523,14 +513,14 @@ img.removeAttr("title")
       <p>I would like to say:<strong>Hello</strong></p>//
   </body>
   </html>
-  ```
+```
 
 - .prepend()
 
   在每个匹配元素里面的头部处插入参数内容
 
-  ```html
-  <!DOCTYPE html>
+```html
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -547,10 +537,10 @@ img.removeAttr("title")
     	<p>hello world</p>
     	<p>分割线</p>
     </div>
-    */
+        */
   </body>
   </html>
-  ```
+```
 
 ### **DOM操作(五)**
 
@@ -560,8 +550,8 @@ img.removeAttr("title")
 
   在匹配元素集合中的每个元素后面插入参数所指定的内容，作为其兄弟节点
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -572,17 +562,17 @@ img.removeAttr("title")
     /*
     <p>I would like to say: </p>
     <b>Hello</b>
-  	*/
+      */
   </body>
   </html>
-  ```
+```
 
 - .before
 
   根据参数设定，在匹配元素的前面插入内容，作为其兄弟节点
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html>
   <head>
     <script src="./js/jquery-3.6.0.min.js"></script>
@@ -593,10 +583,10 @@ img.removeAttr("title")
     /*
     <b>Hello</b>
     <p>I would like to say: </p>
-  	*/
+      */
   </body>
   </html>
-  ```
+```
 
 ### **DOM操作(六)**
 
@@ -606,8 +596,8 @@ DOM 移除
 
    从DOM中移除**集合中**匹配元素的所有子节点
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <script src="./js/jquery-3.6.0.min.js"></script>
@@ -622,14 +612,14 @@ DOM 移除
      </script>
    </body>
    </html>
-   ```
+```
 
 2. .remove()
 
    将**匹配元素集合**从DOM中删除
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <script src="./js/jquery-3.6.0.min.js"></script>
@@ -641,7 +631,7 @@ DOM 移除
        //整个<p>删除了
      </script>
    </body>
-   ```
+```
 
 DOM 替换
 
@@ -649,8 +639,8 @@ DOM 替换
 
    用集合的匹配元素替换每个目标元素(写法比较反人类)
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <script src="./js/jquery-3.6.0.min.js"></script>
@@ -662,14 +652,14 @@ DOM 替换
      </script>
    </body>
    </html>
-   ```
+```
 
 2. .replaceWith()
 
    用提供的内容替换集合中所有匹配的元素
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <script src="./js/jquery-3.6.0.min.js"></script>
@@ -681,9 +671,7 @@ DOM 替换
      </script>
    </body>
    </html>
-   ```
-
-   
+```
 
 ### **CSS操作**
 
@@ -695,8 +683,8 @@ DOM 替换
 
    获取和设置匹配元素的样式
 
-   ```
-   //读取背景颜色
+```plain
+  //读取背景颜色
    var color = $(".box").css("background-color");
    
    //设置样式 单个
@@ -708,16 +696,14 @@ DOM 替换
    	//如果涉及到-的形式，使用驼峰命名法
        fontSize:"20px",
    });
-   ```
-
-   
+```
 
 2. .height()，.width()
 
    获取元素的当前高度值宽度值或设置元素的高度值宽度值
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <style>
@@ -741,9 +727,7 @@ DOM 替换
    </body>
    </html>
    
-   ```
-
-   
+```
 
 3. .innerHeight()，.innerWidth()
 
@@ -753,10 +737,10 @@ DOM 替换
 
    获取元素的当前宽度值和高度值,包括padding，border和**选择性**的margin
 
-   ```
-   //正常使用.outerHeight()，.outerWidth()不包括margin
+```plain
+  //正常使用.outerHeight()，.outerWidth()不包括margin
    //.outerHeight(true)，.outerWidth(true)就包含margin
-   ```
+```
 
 #### (二)位置
 
@@ -764,14 +748,14 @@ DOM 替换
 
    获取元素的当前坐标，或设置每一个元素的坐标，坐标相对于文档
 
-   ***获取位置***
+      **_获取位置_**
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <style>
-        *{
+                *{
          margin: 0;
          padding: 0;
         }
@@ -793,12 +777,12 @@ DOM 替换
    </body>
    </html>
    
-   ```
+```
 
-   ***设置位置***
+      **_设置位置_**
 
-   ```
-   <!DOCTYPE html>
+```plain
+  <!DOCTYPE html>
    <html>
    <head>
      <style>
@@ -823,7 +807,7 @@ DOM 替换
    </body>
    </html>
    
-   ```
+```
 
 2. .position()
 
@@ -835,10 +819,6 @@ DOM 替换
 
    默认都是 不传参获取 传参设置
 
-   
-
-
-
 ### **事件之绑定事件处理器**
 
 #### **1 .on()**
@@ -847,22 +827,20 @@ DOM 替换
 
 ​	第一个参数为什么事件 第二个为事件处理函数
 
-```
+```plain
 $("#button").on("click", function(event){
   console.log("事件处理器")
 });
-
 ```
 
 ​	事件委托
 
 ​	第二个参数为目标元素
 
-```
+```plain
 $("#ul").on("click", "li", function(event){
  console.log($(this).text());
 });
-
 ```
 
 #### **2 .one()**
@@ -879,7 +857,7 @@ $("#btn").one("click", function() {
 
 移除一个事件处理函数，移除on事件处理器
 
-```
+```plain
 function aClick() {
       console.log("点击事件")
      }
@@ -897,18 +875,18 @@ function aClick() {
 
    为 JavaScript 的"click" 事件绑定一个处理器，或者触发元素上的 "click" 事件 和.on("click", function({})) 同理
 
-   ```
-   $("#btn").click(function() {
+```plain
+  $("#btn").click(function() {
     alert("点击事件");
    });
-   ```
+```
 
 2. .hover()
 
    将二个事件函数绑定到匹配元素上，分别当鼠标指针进入和离开元素时被执行 前一个是移入函数 后一个是滑出函数 可以写一个移入显示 滑出隐形的事件
 
-   ```html
-   $("li").hover(
+```html
+  $("li").hover(
     // 滑入
     function () {
      console.log("滑入")
@@ -918,7 +896,7 @@ function aClick() {
      console.log("滑出")
      }
    );
-   ```
+```
 
 3. .mouseenter()
 
@@ -940,15 +918,13 @@ function aClick() {
 
    鼠标离开事件（注：支持事件冒泡）
 
-
-
 ### **事件之表单事件**
 
-#### 	1**.focus()**
+#### 	1\*\*.focus()\*\*
 
 ​		为 JavaScript 的 "focus" 事件绑定一个获取焦点处理函数，或者触发元素	上的 "focus" 事件
 
-```
+```plain
 $('#input').focus(function() {
  console.log('获得焦点');
 });
@@ -958,7 +934,7 @@ $('#input').focus(function() {
 
 ​		为 "blur" 事件绑定一个失去焦点处理函数
 
-```
+```plain
 $('#other').click(function() {
  $('#target').blur();
 });
@@ -966,7 +942,6 @@ $('#other').click(function() {
 $('#target').blur(function(){
 	console.log("失去焦点");
 })
-
 ```
 
 #### 	3.change()
@@ -975,7 +950,7 @@ $('#target').blur(function(){
 
 ​		内容发生改变、失去焦点、回传都会
 
-```
+```plain
 $('.target').change(function() {
  alert('内容改变');
 });
@@ -992,13 +967,11 @@ $('#element).chanege(function(e){
 
 ​	当用户提交表单时，就会在这个表单元素上触发submit事件。它只能绑定在	`<form>`元素上
 
-```
+```plain
 $('#target').submit(function() {
  alert('表单提交事件');
 });
 ```
-
-
 
 ### **事件之键盘事件**
 
@@ -1006,7 +979,7 @@ $('#target').submit(function() {
 
 添加键盘按下事件
 
-```
+```plain
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1025,7 +998,6 @@ $('#target').submit(function() {
   </script>
 </body>
 </html>
-
 ```
 
 #### 2 .keypress()
@@ -1036,10 +1008,6 @@ $('#target').submit(function() {
 
 添加键盘抬起事件 
 
-
-
-
-
 ### **事件之浏览器事件**
 
 #### 1 .resize()
@@ -1048,7 +1016,7 @@ $('#target').submit(function() {
 
 可视窗口 不包括调试页面
 
-```
+```plain
 $(window).resize(function(){
       console.log("改变浏览器尺寸");
      })
@@ -1059,8 +1027,8 @@ $(window).resize(function(){
 
 浏览器滚动事件
 
-```
- $(window).scroll(function(){
+```plain
+$(window).scroll(function(){
       console.log("滚动");
      })
 可以配合$(window).scrollTop()和$(window).height()来使用
@@ -1072,25 +1040,23 @@ $(window).resize(function(){
 
   ​	获取事件类型
 
-  ```
-  $("#btn").click("click",function(e){
+```plain
+ $("#btn").click("click",function(e){
     console.log(e.type);
   })
   //
-  ```
-
-  
+```
 
 - event.target 
 
   获取当前元素对象
 
-  ```
-  $("#btn").click("click",function(e){
+```plain
+ $("#btn").click("click",function(e){
     console.log(e.target);
   })
   //会打印出id="btn"的元素
-  ```
+```
 
 - event.currentTarget 
 
@@ -1102,8 +1068,8 @@ $(window).resize(function(){
   >
   > currentTarget：指向添加事件的元素
 
-  ```
-  <!DOCTYPE html>
+```plain
+ <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -1138,27 +1104,25 @@ $(window).resize(function(){
     </script>
   </body>
   </html>
-  ```
+```
 
 - event.preventDefault()
 
   如果调用这个方法，默认事件行为将不再触发。
 
-  ```
-  <a href="https://itbaizhan.com">itbaizhan</a>
+```plain
+ <a href="https://itbaizhan.com">itbaizhan</a>
   <script>
     $("a").click("click",function(e){
       e.preventDefault();
      })
      //这样a就不跳转了
   </script>
-  ```
+```
 
 -  event.stopPropagation()
 
   防止事件冒泡到DOM树上，也就是不触发的任何前辈元素上的事件处理函数
-
-   
 
 ### jQuery_遍历
 
@@ -1168,7 +1132,8 @@ $(window).resize(function(){
 
 通过一个函数匹配当前集合中的每个元素,产生一个包含新的jQuery对象
 
-```/
+```plain
+/
  <ul>
     <li>列表1</li>
     <li>列表2</li>
@@ -1189,25 +1154,22 @@ $(window).resize(function(){
 
 遍历一个jQuery对象，为每个匹配元素执行一个函数
 
-```
+```plain
 $("li").each(function(index,element){
   console.log(index,element);
 })
-
 ```
 
-**********************************************************
+\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
 **each和map的返回值不同，map返回一个新的数组，each返回原始数组**
 
-**********************************************************
-
-
+\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
 
 #### 3 .get()
 
 列表中获得一个JS对象的DOM元素.get() 下标从0开始
 
-```
+```plain
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1231,12 +1193,11 @@ $("li").each(function(index,element){
   </script>
 </body>
 </html>
-
 ```
 
 1.JS对象转换成jQuery对象  $( )
 
-```
+```plain
 var lis = document.getElementbyId("li");
 
 console.log($(lis));
@@ -1250,18 +1211,14 @@ console.log($(lis));
 
 因为两者的方法不能互相使用所以需要转换
 
-
-
-
-
 ### **jQuery树遍历**
 
 - #### .children()
 
   获得直接子元素，可以传递一个选择器参数
 
-  ```
-  <ul class="first">
+```plain
+ <ul class="first">
       <li>item 1</li>
       <li>
         <ul class="secode">
@@ -1277,7 +1234,7 @@ console.log($(lis));
       $(".first").children("li").css("border","1px solid red")
   //只选择后代的li标签 span标签不变
     </script>
-  ```
+```
 
 - #### .find()
 
@@ -1297,11 +1254,7 @@ console.log($(lis));
 
   获得元素的兄弟元素，可以传递一个选择器参数
 
-  全部同级元素 包括**<script>** 里面传参可以锁定什么元素
-
-
-
-
+  全部同级元素 包括\*\*<script>\*\* 里面传参可以锁定什么元素
 
 ### **jQuery动画**
 
@@ -1311,8 +1264,8 @@ console.log($(lis));
 
   执行显示动画
 
-  ```
-  <style>
+```plain
+ <style>
       div{
         width: 100px;
         height: 100px;
@@ -1333,21 +1286,17 @@ console.log($(lis));
       //这里显示就是从无到有
     </script>
   </body>
-  ```
-
-  
+```
 
 - .hide()
 
   执行隐藏动画
 
-  ```
-  $("button").click(function(){
+```plain
+ $("button").click(function(){
     $("div").hide(1000)
   })
-  ```
-
-  
+```
 
 - .fadeIn()
 
@@ -1355,23 +1304,23 @@ console.log($(lis));
 
   ​	
 
-  ```
-  $("button").click(function () {
+```plain
+ $("button").click(function () {
    $("div").fadeIn(1000);
   });
   
-  ```
+```
 
 - .fadeOut()
 
   通过淡出的方式**隐藏**匹配元素
 
-  ```
-  $("button").click(function () {
+```plain
+ $("button").click(function () {
    $("div").fadeOut(1000);
   });
   
-  ```
+```
 
 #### **(二)**.slideDown() .slideUp() .animate()
 
@@ -1379,34 +1328,34 @@ console.log($(lis));
 
   用滑动动画显示一个元素
 
-  ```
-  $("button").click(function () {
+```plain
+ $("button").click(function () {
    $("div").slideDown(1000);
   });
   
   //滑动从上到下
-  ```
+```
 
 - .slideUp() 
 
   用滑动动画隐藏一个元素
 
-  ```
-  $("button").click(function () {
+```plain
+ $("button").click(function () {
    $("div").slideUp(1000);
   });
-  ```
+```
 
 - .animate()
 
   执行自定义动画
 
-  ```
-  $("button").click(function () {
+```plain
+ $("button").click(function () {
     $("div").animate({
       width: "200px",
       opacity: 0.5
      }, 1500);
   });
   //第二个参数是动画执行的时长
-  ```
+```
