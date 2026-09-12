@@ -15,7 +15,7 @@
 | 本地后台 | <http://localhost:4321/admin/> |
 | 登录方式 | GitHub Personal Access Token（classic，scope 勾 `repo`）。登录页按钮文案是 **Sign In Using Access Token** |
 | 后端 | `backend.name: github`，仓库 `fartmonarch/astro_blog`，分支 `main` |
-| 管理范围 | 只识别 `src/content/blog/*.md`。当前 11 个 `.md` 在列表里；`hello-world.mdx` 不在（`extension: md`），继续用 VSCode 维护 |
+| 管理范围 | 只识别 `src/content/blog/*.md`。当前 11 篇全是 `.md`，都在列表里。`.mdx` 不由 CMS 管理但仍能正常渲染（见 1.1） |
 | 图片 | **CMS 内没有开启图片上传**。正文图片现状是仓库内 `/images/<slug>/xxx`（9 处引用，对应 `public/images/` 16 个文件）；迁 COS 外链的方案已写好但**还没执行** |
 | 发布链路 | CMS → GitHub API 提交 → Vercel 检测 `main` 变化 → 自动构建。改动通常几十秒上线 |
 
@@ -38,6 +38,23 @@
                         ▼
                  Vercel 构建 → fartmonarch.xyz
 ```
+
+### 1.1 侧边栏里的「集合」和那个数字
+
+侧边栏的**集合（Collections）**就是 `config.yml` 里 `collections` 的呈现。本项目只定义了一个，所以那里只有一项：
+
+```
+集合
+└─ 博客文章  11      ← 数字 = 这个集合下的条目数
+```
+
+**那 11 是什么意思**：该集合当前能看到的条目数，等于 `src/content/blog/` 里符合 `extension: md` 的文件数。当前 11 篇全是 `.md`。`.mdx` 不会被计入（CMS 只列 `.md`），删除 starter 的 `hello-world.mdx` 之前也是 11 —— 因为它从来不在这个计数里。
+
+**为什么侧边栏没有"分类"**：分类不是集合，而是每篇文章里的一个字段（`categories`）。它的可选项来自 `config.yml` 里 select 字段的 `options`，白名单来自 `src/config.ts` 的 `CATEGORIES`。CMS 侧没有"分类管理"界面，因为 `/tags/<分类>/` 这些页面是 Astro 在**构建时**按白名单生成的，CMS 不参与生成。增删分类的做法见 [6.11](#611-新增--删除分类)。
+
+**MDX 仍然支持**，只是 CMS 不管它：`src/content.config.ts` 的 loader 仍是 `**/*.{md,mdx}`，`astro.config.mjs` 里 `mdx()` 集成也保留着。也就是说手写的 `.mdx`（可以用组件、可以写 `{表达式}`）照样会被收集和渲染，只是不会出现在 CMS 列表里，得用 VSCode 维护。（2026-09-12 已删掉 starter 自带的 `hello-world.mdx` 测试文，并实测过一条临时 `.mdx` 能正常渲染后再移除。）
+
+顺带：`astro.config.mjs` 里 `/en/blog/hello-world` → `/blog/hello-world/` 那条 301 也一起删了 —— 目标文章没了，留着只会 301 到一个 404。其余 5 条 `/en/*` 旧链接重定向保持不动。
 
 ---
 
@@ -62,7 +79,7 @@ collections:
     folder: "src/content/blog"   # 就是 Astro 的 blog collection 目录
     create: true                 # 允许新建
     delete: true                 # 允许删除
-    extension: md                # 新建文件保存为 .md（.mdx 因此不在列表里）
+    extension: md                # 新建文件保存为 .md；.mdx 不由 CMS 管理（但构建仍支持，见 1.1）
     format: frontmatter          # YAML frontmatter + 正文
     slug: "{{fields._slug}}"       # 文件名 = slug，也就是文章 URL；编辑器里有必填的 Slug 输入框（见 6.4.1）
     editor:
@@ -199,6 +216,43 @@ CMS 的验证逻辑（0.191.1 bundle 内已确认）：弹出目录选择器拿�
 | 报 `A repository root directory could not be selected` | 你在选择框里取消了（或对话框没正常弹出） | 重来一次，选中文件夹后点对话框的确认按钮 |
 | 刷新页面后登录失败，提示拿不到目录句柄 | IndexedDB 里记着的旧句柄失效了（目录被移动/改名/权限被撤） | 再点一次 "Work with Local Repository" 重新选；仍不行就清掉 `localhost:4321` 的站点数据 |
 | 项目是从 ZIP 解压出来的 | 没有 `.git`，验证必然失败 | 先 `git init`（或改用 `git clone`）再选 |
+
+### 4.2 本地模式写坏文件：0 字节与"数据是旧的"
+
+本地模式是浏览器用 File System Access API 直接写盘。写入被打断（切标签页、权限弹窗、扩展干扰）时，可能留下一个 **0 字节文件**。2026-09-12 就这样弄空过一篇 `hibit-uninstaller…md`。
+
+后果不只是"少了一篇"：`astro build` / `astro dev` 的内容同步会在这篇上报 `InvalidContentEntryDataError ... data does not match collection schema`（缺 `title`/`description`/`pubDate`）。**同步失败后页面继续用上一次成功的旧快照**，而 `src/config.ts` 这类普通模块照样热更新 —— 于是出现"分类名是新的、计数全是 0、未分类=N"的混合状态，非常容易被误判成"我的改动没生效"。
+
+诊断三行：
+
+```powershell
+# 1. 有没有 0 字节内容文件
+Get-ChildItem src\content\blog -File | Where-Object Length -eq 0
+
+# 2. 构建报错会点名是哪个文件
+npm run build
+
+# 3. 逐篇对比 HEAD 与当前大小，找被清空/截断的
+Get-ChildItem src\content\blog -File | ForEach-Object {
+  $rel = "src/content/blog/" + $_.Name
+  "{0,-52} HEAD={1,-8} 现在={2}" -f $_.Name, (git cat-file -s "HEAD:$rel"), $_.Length
+}
+```
+
+恢复（内容都在 Git 里）+ 让内容层重新同步：
+
+```powershell
+git checkout HEAD -- "src/content/blog/被清空的那篇.md"
+npm run build                             # 必须通过
+npm run astro -- dev stop
+npm run astro -- dev --background         # 内容层卡住后，重启最省事
+```
+
+之后那篇的分类要重新勾（被清空时丢了）。
+
+**别把这当成内容丢失**：CMS 保存时会重新序列化整篇 Markdown，diff 看着很大但内容没丢。可以预期的变化有：表格对齐空格被压掉、无序列表统一成 `-`、代码围栏语言有时变成 `plain`、空的可选字段被写成 `''`（本项目 10 篇文章里有 `updatedDate: ''`，由 `content.config.ts` 的 `preprocess` 兜住）。要对齐得更干净可以加 `output.omit_empty_optional_fields: true`（[6.5](#65-输出稳定性本项目的重点)）。
+
+保险做法：本地模式批量改完，先 `git status` 扫一眼有没有 0 字节文件，再 `npm run build` 确认，最后才 commit。
 
 顺带说一句：**本地工作流是可选的**。你本来就习惯 VSCode + `git push` 的话完全不用碰它，本地改完推上去，让 Vercel 出个 Preview 部署看效果，比调这个选择框省事。
 
@@ -557,12 +611,12 @@ media_libraries:
 
 ```ts
 // src/config.ts —— 数组顺序 = /tags/ 页面上卡片的显示顺序
-export const CATEGORIES = ["技术笔记", "博客建设", "生活记录", "问题排查", "踩坑记录"] as const;
+export const CATEGORIES = ["实习笔记", "前端笔记", "服务端笔记", "运维笔记", "电脑知识", "Agent", "踩坑记录"] as const;
 ```
 
 ```yaml
 # public/admin/config.yml —— options 顺序与上面保持一致
-options: ["技术笔记", "博客建设", "生活记录", "问题排查", "踩坑记录"]
+options: ["实习笔记", "前端笔记", "服务端笔记", "运维笔记", "电脑知识", "Agent", "踩坑记录"]
 ```
 
 改完刷新 CMS 页面，新建文章的「分类」下拉里就能勾到它；`npm run build` 会多一个 `/tags/踩坑记录/` 页面（0 篇也会生成，索引页上显示成灰色卡片）。
@@ -571,7 +625,7 @@ options: ["技术笔记", "博客建设", "生活记录", "问题排查", "踩�
 
 ```
 [InvalidContentEntryDataError] blog → xxx data does not match collection schema.
-  categories.0: Invalid option: expected one of "技术笔记"|"博客建设"|...
+  categories.0: Invalid option: expected one of "实习笔记"|"前端笔记"|...
 ```
 
 改文章两种方式：在 CMS 里逐篇打开、改勾选、Publish；或者直接在 VSCode 改 frontmatter 的 `categories`。删掉的分类对应的 `/tags/<旧分类>/` 页面会消失（404），本项目的 `redirects` 没为它补 301。
@@ -582,6 +636,20 @@ options: ["技术笔记", "博客建设", "生活记录", "问题排查", "踩�
 - **分类名不能含 `/` 或 `#`**，它直接进 `/tags/<分类>/` 路由
 - **单篇最多 3 个分类**：schema 的 `max(3)` 与 CMS 的 `max: 3` 是双保险，改词表不影响这个上限
 - **重命名分类 = 删旧的 + 加新的**，同样遵循"先改文章、再改词表"
+
+#### 6.11.1 想在 CMS 里直接敲新分类行不行
+
+可以，但要动架构，而且会把当初刻意去掉的问题请回来。要做的是三处一起改：
+
+| 现状（白名单） | 改成动态 |
+|---|---|
+| CMS 字段 `widget: select` + `options: [...]` | `widget: list`（自由输入，像标签那样随手加） |
+| `src/content.config.ts` 用 `z.enum(CATEGORIES).max(3)` | 放宽成 `z.array(z.string()).max(3)` |
+| `/tags/[tag].astro` 的 `getStaticPaths` 只产出白名单 | 改成从所有文章实际用到的 `categories` 收集去重后生成 |
+
+代价：白名单没了，打错一个字就多出一个分类页；`/tags/` 索引页也没法保证"固定展示哪些分类"。这正是[《分类标签体系改造方案.md》](./分类标签体系改造方案.md)里为什么要立白名单——改造前 16 个标签里有 13 个只用过一次，每篇详情页都挂着一排假分类。
+
+结论：分类变动不频繁的话（一年调几次），维持白名单 + 改两处代码更划算；如果你发现自己在频繁加分类，再按上表改成动态。
 
 ---
 
@@ -628,7 +696,7 @@ git push
 | 保存文章后 Vercel 构建失败，报 Invalid Date | CMS 把空的 `updatedDate` 写成了 `''` | 已在 `content.config.ts` 用 `z.preprocess` 兜住；并建议加 `output.omit_empty_optional_fields: true`（commit `f6fd8d1`） |
 | 打开编辑器提示预览错误 | Astro 没有预览路由，`preview` 默认开着 | 保持 `editor.preview: false` |
 | 新建文章 URL 一长串百分号编码 | 旧配置 `slug: "{{slug}}"` 让中文标题变成中文文件名 | 已配 `slug: "{{fields._slug}}"` 根治（[6.4.1](#641-解决先保存再改文件名这个两步操作)）；已有中文文件名的老文章仍可用 **⋮ → Edit Slug** 改名 |
-| `hello-world.mdx` 在 CMS 里看不到 | `extension: md`，CMS 只列 `.md` | 预期行为；该文继续用 VSCode 管，或转成 `.md` |
+| `hello-world.mdx` 这类 `.mdx` 在 CMS 里看不到 | `extension: md`，CMS 只列 `.md` | 预期行为。MDX 的构建支持仍在（loader 的 `**/*.{md,mdx}` + `mdx()` 集成），`.mdx` 用 VSCode 维护即可。starter 的那篇已于 2026-09-12 删除 |
 | 「标签」以前会被强制填写 | 字段默认 `required: true`，原配置没写 `required: false` | 已修；写新字段时记得显式声明 |
 | 分类怎么选都存不下 / 构建报非法分类 | `src/config.ts` 的 `CATEGORIES` 与 `config.yml` 的 `options` 不一致 | 两处必须同步；schema 是硬校验，写错会直接构建失败 |
 
@@ -637,6 +705,7 @@ git push
 | 现象 | 排查方向 |
 |---|---|
 | TS 提示 `z`（来自 `astro:content`）已废弃 | Astro 官方把 `astro:content` 的 `z` 标为废弃，提示改用 `astro/zod`。本项目已改成 `import { z } from "astro/zod"`（2026-09-12，构建 22 页通过）。两者是同一个 zod 实例，纯改名，无行为差异 |
+| CMS 里改完分类，本地页面还是显示全部未分类 | 有文件被本地模式写成了 0 字节，内容同步失败后页面仍在用旧快照（分类名却是新的）。见 [4.2](#42-本地模式写坏文件0-字节与数据是旧的) | 按 4.2 找到并恢复该文件，然后重启 dev server |
 | 登录页只有 GitHub 按钮 / 按钮点了没反应 | `base_url` 默认是 `https://api.netlify.com`，本站不在 Netlify 上。加 `auth_methods: [token]` 只保留贴 token 的登录方式 |
 | 改了 `config.yml` 界面没变化 | 刷新页面；再确认线上 `https://www.fartmonarch.xyz/admin/config.yml` 的内容是你改的那份（Vercel 是否构建成功） |
 | Publish 后线上没变化 | 看 Vercel 构建状态；构建失败通常是 frontmatter 与 schema 不符，报错会指出具体字段 |

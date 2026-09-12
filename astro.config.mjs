@@ -29,7 +29,8 @@ export default defineConfig({
     '/en/archive': '/archive/',
     '/en/tags': '/tags/',
     '/en/rss.xml': '/rss.xml',
-    '/en/blog/hello-world': '/blog/hello-world/',
+    // '/en/blog/hello-world' 已移除：目标文章（starter 的 hello-world.mdx）于 2026-09-12 删除，
+    // 留着会 301 到一个 404。若想保留旧链接，可改成 '/en/blog/hello-world': '/'。
   },
 
   adapter: vercel()

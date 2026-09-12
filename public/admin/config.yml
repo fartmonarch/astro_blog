@@ -6,10 +6,27 @@ backend:
 # 认证：GitHub Personal Access Token（登录页点 "Sign In with Token" 粘贴即可）
 # 无需 OAuth App；Token 仅保存在浏览器 local storage。
 
-# 图片继续走 COS 图床外链，CMS 内不启用仓库图片上传
-# （media_folder / public_folder 为满足配置要求而保留）
-media_folder: "public/images"
-public_folder: "/images"
+# 图片走腾讯云 COS：CMS 里直接上传，文件不进仓库。
+# 这里**故意不写 media_folder** —— 省略它就是官方关闭"内置仓库媒体存储"的方式，
+# 于是媒体选择器里只剩 COS 一个去处。存量正文里的 /images/... 引用不受影响（文件仍在 public/ 下）。
+#
+# 凭据：access_key_id 填腾讯云访问密钥的 SecretId（36 字符，放配置里是安全的）；
+#       **SecretKey（32 字符）不要写在这里**，首次浏览/上传时在 CMS 界面输入，只存浏览器 local storage。
+#
+# endpoint 与 public_url 是两件事，别混：
+#   endpoint    = 列表/上传用的 S3 API 地址。**必须填桶级虚拟主机域名**，
+#                 因为 COS 拒绝 path-style（会返回 PathStyleDomainForbidden），
+#                 scripts/patch-sveltia-cos.ps1 已把拼接改成 ${endpoint}/${key}；
+#                 浏览器直接请求它，所以这个桶**必须**配跨域 CORS。
+#   public_url  = 只决定写进正文的图片 URL（自定义域名/CDN 填这里）。
+media_libraries:
+  aws_s3:
+    access_key_id: AKIDBE3wgBWeehbTH1mUC6ujcR9tXEwc7Ofr
+    bucket: fartmonarch-cos-1344165548
+    region: ap-shanghai                    # 必须与桶所在地域一致，否则 SigV4 签名不匹配
+    endpoint: https://fartmonarch-cos-1344165548.cos.ap-shanghai.myqcloud.com
+    prefix: img/                           # 上传落到桶内 img/ 目录
+    public_url: https://img.fartmonarch.xyz
 
 site_url: https://fartmonarch.xyz
 
