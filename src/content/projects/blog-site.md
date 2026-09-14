@@ -1,15 +1,15 @@
 ---
-title: 沫之白的小窝
+title: 沫之白的小窝-个人blog
 description: 你现在看到的这个博客。基于 Astro 的纯静态站点，Git 仓库即数据库，用 Sveltia CMS 在浏览器里直接读写 Markdown，图片走腾讯云 COS 外链。
 status: 维护中
-featured: true
 platforms:
   - github
+featured: true
 techStack: Astro, TypeScript, Sveltia CMS, Vercel
-cover: ''
+cover: https://www.fartmonarch.xyz/favicon.png
 links:
-  live: 'https://fartmonarch.xyz'
-  repo: 'https://github.com/fartmonarch/astro_blog'
+  live: https://fartmonarch.xyz
+  repo: https://github.com/fartmonarch/astro_blog
   npm: ''
 ---
 

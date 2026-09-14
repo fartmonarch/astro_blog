@@ -1,3 +1,8 @@
+app_title: 沫之白的小窝 · 后台        # 登录页标题 + 浏览器标签页标题（默认 Sveltia CMS）
+logo:
+  src: /favicon.png                  # 图片放 public/ 下，用绝对路径；方图最佳，512×512 推荐
+  show_in_header: true              # 同时用作登录页、页头、favicon、PWA 图标
+
 backend:
   name: github
   repo: fartmonarch/astro_blog
