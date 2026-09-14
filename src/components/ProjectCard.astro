@@ -11,9 +11,6 @@ export interface Props extends HTMLAttributes<"article"> {
 const { project, ...attrs } = Astro.props;
 const { title, description, status, platforms, techStack, cover, links, featured } = project.data;
 
-// 技术栈拍成 "A|B|C" 挂在卡片上：项目页的筛选脚本读它做 DOM 过滤，不用再发请求。
-const techAttr = techStack.join("|");
-
 // 只保留词表里认得的平台，顺序按 PROJECT_PLATFORMS 走（与 CMS 里的填写顺序无关，展示保持一致）
 const projectPlatforms = PROJECT_PLATFORMS.filter((platform) => platforms.includes(platform.value));
 
@@ -30,7 +27,7 @@ const entries = links
   : [];
 ---
 
-<article class="project-card" data-tech-stack={techAttr} {...attrs}>
+<article class="project-card" {...attrs}>
   <div class="body">
     <div class="head">
       <!-- 图标位：尺寸跟头像一个量级，不是宽幅封面图。填了 cover 用图，否则用名字首字 -->

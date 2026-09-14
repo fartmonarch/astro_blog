@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
-import TechFilter from "../../components/TechFilter.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
@@ -10,18 +9,12 @@ const pageDescription = "我发布过的仓库与工程：源码、上线地址�
 
 const projects: CollectionEntry<"project">[] = await getCollection("project");
 
-// 顺序：置顶优先 → 名称。用名称兜底是为了构建结果稳定可复现
+// 顺序：精选优先 → 名称。用名称兜底是为了构建结果稳定可复现
 // （Sveltia 目前没有文件夹集合的手动排序，没法直接读用户拖出来的顺序）。
 projects.sort((a, b) => {
   if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
   return a.data.title.localeCompare(b.data.title, "zh-CN");
 });
-
-// 筛选按钮的词表来自项目里实际出现过的技术栈，不另设白名单。
-// 于是新增一个技术栈只需在 CMS 里写出来，按钮自动出现。
-const techFilters = [...new Set(projects.flatMap((project) => project.data.techStack))].sort(
-  (a, b) => a.localeCompare(b, "zh-CN"),
-);
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -34,76 +27,14 @@ const techFilters = [...new Set(projects.flatMap((project) => project.data.techS
     projects.length === 0 ? (
       <p class="empty">还没有项目。去 /admin/ → 项目 → New 项目 添加第一条。</p>
     ) : (
-      <>
-        {techFilters.length > 0 && <TechFilter techs={techFilters} />}
-
-        <div class="projects-grid" id="projects-grid">
-          {projects.map((project) => (
-            <ProjectCard project={project} />
-          ))}
-        </div>
-
-        <p class="filter-empty" id="filter-empty" hidden>
-          这个技术栈下暂无项目。
-        </p>
-      </>
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
     )
   }
 </BaseLayout>
-
-<script>
-  // 位置故意放在 <BaseLayout> 外面：模板顶层（不在表达式里）是 prettier-plugin-astro 能正常解析的位置，
-  // 而 prettier 一旦遇到"表达式里的 <script>"就会报 SyntaxError。
-  // 页面没有项目时下面的元素不存在，函数第一行就 return，不会报错。
-  (function () {
-    const filters = document.getElementById("tech-filters");
-    const grid = document.getElementById("projects-grid");
-    if (!filters || !grid) return;
-
-    const buttons = Array.from(filters.querySelectorAll<HTMLButtonElement>(".tech-filter"));
-    const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-tech-stack]"));
-    const emptyHint = document.getElementById("filter-empty");
-
-    function apply(tech: string) {
-      let shown = 0;
-      cards.forEach(function (card) {
-        const stacks = (card.getAttribute("data-tech-stack") || "").split("|");
-        const hit = !tech || stacks.indexOf(tech) !== -1;
-        card.hidden = !hit;
-        if (hit) shown++;
-      });
-      buttons.forEach(function (btn) {
-        btn.classList.toggle("is-active", btn.getAttribute("data-tech") === tech);
-      });
-      if (emptyHint) emptyHint.hidden = shown > 0;
-    }
-
-    // 先按 URL 上的 ?tech= 还原视图，找不到就回落成「全部」
-    const params = new URLSearchParams(window.location.search);
-    let initial = params.get("tech") || "";
-    if (
-      initial &&
-      !buttons.some(function (b) {
-        return b.getAttribute("data-tech") === initial;
-      })
-    ) {
-      initial = "";
-    }
-    apply(initial);
-
-    filters.addEventListener("click", function (event) {
-      const btn = (event.target as HTMLElement).closest(".tech-filter");
-      if (!btn) return;
-      const tech = btn.getAttribute("data-tech") || "";
-      apply(tech);
-      // 只改地址栏，别刷页、也别往后退栈里塞记录
-      const url = new URL(window.location.href);
-      if (tech) url.searchParams.set("tech", tech);
-      else url.searchParams.delete("tech");
-      window.history.replaceState(null, "", url);
-    });
-  })();
-</script>
 
 <style>
   .projects-header {
@@ -113,12 +44,6 @@ const techFilters = [...new Set(projects.flatMap((project) => project.data.techS
     color: var(--text-secondary);
   }
 
-  .tech-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-  }
   /* 一行两个：窄屏退化成一行一个 */
   .projects-grid {
     display: grid;
@@ -130,10 +55,5 @@ const techFilters = [...new Set(projects.flatMap((project) => project.data.techS
     .projects-grid {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
-
-  .filter-empty {
-    color: var(--text-secondary);
-    margin-top: 2rem;
   }
 </style>
