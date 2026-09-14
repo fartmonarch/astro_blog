@@ -59,7 +59,14 @@ function splitFrontmatter(source: string, filePath: string) {
  * 关于 `.mdx`：这里用 `renderMarkdown()` 渲染，等价于 Markdown 处理——
  * 也就是说 **.mdx 里的 JSX/import 不会被处理**。当前仓库没有 mdx 内容；
  * 真要用 mdx，请换回官方 glob() loader（并先解决构建阻塞）。
+ *
+ * 开发模式下的热更新是自己接的（glob() 也是自己接的）：往 `watcher` 上挂
+ * change/add/unlink 三个监听，改文件或新增文件都会重新读那一条并写回 store。
  */
+
+/** 同一个 watcher 上只允许存在一份监听，避免 store 被反复 load 后叠出重复 handler */
+const boundWatchers = new WeakMap<object, Array<[string, (...args: unknown[]) => void]>>();
+
 function markdownFiles(dir: string): Loader {
   return {
     name: "markdown-files-loader",
@@ -96,23 +103,20 @@ function markdownFiles(dir: string): Loader {
         return found;
       };
 
-      const files = (await walk(root)).sort();
-
-      // 每次 load 都是完整重建：这样删掉的条目不会残留在 store 里
-      // （glob() 用 untouchedEntries 做增量，效果一样，这里从简）。
-      store.clear();
-
-      if (files.length === 0) {
-        logger.warn(`目录里没有任何 .md/.mdx 文件：${dir}`);
-        return;
-      }
-
-      for (const file of files) {
-        const source = await fs.readFile(file, "utf-8");
-        const { frontmatter, content } = splitFrontmatter(source, file);
+      /** 读取单个文件并写进 store；读不到（被删/被改名）就删掉对应条目 */
+      const putEntry = async (file: string) => {
         const relative = path.relative(root, file).split(path.sep).join("/");
         const id = relative.replace(/\.mdx?$/, "");
 
+        let source: string;
+        try {
+          source = await fs.readFile(file, "utf-8");
+        } catch {
+          store.delete(id);
+          return;
+        }
+
+        const { frontmatter, content } = splitFrontmatter(source, file);
         // data 交给集合 schema 校验；body 保留原文，rendered 是渲染好的 HTML
         const data = await parseData({ id, data: frontmatter, body: content });
 
@@ -132,12 +136,67 @@ function markdownFiles(dir: string): Loader {
           rendered,
           assetImports: rendered?.metadata?.imagePaths,
         });
+      };
+
+      const files = (await walk(root)).sort();
+
+      // 每次 load 都是完整重建：这样删掉的条目不会残留在 store 里
+      // （glob() 用 untouchedEntries 做增量，效果一样，这里从简）。
+      store.clear();
+
+      if (files.length === 0) {
+        logger.warn(`目录里没有任何 .md/.mdx 文件：${dir}`);
+        return;
+      }
+
+      for (const file of files) {
+        await putEntry(file);
       }
 
       logger.info(`载入 ${files.length} 个文件：${dir}`);
 
-      // 开发时改文件/加文件能触发重新 load（glob() 也做同样的事）
-      watcher?.add(root);
+      if (!watcher) return;
+
+      // 换监听前，先把上一轮挂的摘掉，避免重复处理同一次文件事件
+      for (const [event, handler] of boundWatchers.get(watcher) ?? []) {
+        watcher.off(event as "change", handler as never);
+      }
+
+      // 每个集合都挂着同一个全局 watcher，所以必须先判断这个文件是不是本集合目录下的，
+      // 否则博文的 loader 会去解析 projects 的文件（schema 不匹配，直接报错）。
+      const belongsHere = (file: string) => {
+        const relative = path.relative(root, file);
+        return (
+          relative !== "" &&
+          !relative.startsWith("..") &&
+          !path.isAbsolute(relative) &&
+          CONTENT_EXTENSIONS.includes(path.extname(relative))
+        );
+      };
+
+      const onFileEvent = async (changedPath: string) => {
+        if (!belongsHere(changedPath)) return;
+        try {
+          await putEntry(changedPath);
+        } catch (error) {
+          // 单个文件坏了不该让开发服务器整体挂掉，报出来继续
+          logger.error(`重新加载失败：${changedPath}\n${(error as Error).message}`);
+        }
+      };
+
+      const handlers: Array<[string, (...args: unknown[]) => void]> = [
+        ["change", (p) => void onFileEvent(p as string)],
+        // 新建文件也要进 store，否则开发时新加一篇内容得重启服务器才看得到
+        ["add", (p) => void onFileEvent(p as string)],
+        ["unlink", (p) => void onFileEvent(p as string)],
+      ];
+      for (const [event, handler] of handlers) {
+        watcher.on(event as "change", handler as never);
+      }
+      boundWatchers.set(watcher, handlers);
+
+      // 目录本身也要看着，Chokidar 才会去监听它下面的文件
+      watcher.add(root);
     },
   };
 }
@@ -235,6 +294,7 @@ const project = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    // 精选 = 上首页的门槛：只有 featured: true 的项目才会出现在首页模块里
     featured: z.preprocess((v) => (v === "" || v == null ? false : v), z.boolean().default(false)),
     status: z.enum([...PROJECT_STATUSES]).default("维护中"),
     platforms: z.preprocess(

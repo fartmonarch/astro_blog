@@ -27,8 +27,8 @@ export const UNCATEGORIZED = "未分类";
 
 // ===== 项目展示 =====
 
-// 项目状态（受控词表）：新增/改名要同步改三处——
-// 这里 + src/content.config.ts（schema 直接引用本数组）+ public/admin/config.yml 里 select 的 options。
+// 项目状态（受控词表）：卡片上那个徽章的取值。
+// 新增/改名要同步改三处：这里 + src/content.config.ts（schema 直接引用本数组）+ public/admin/config.yml 里 select 的 options。
 export const PROJECT_STATUSES = ["维护中", "开发中", "已归档"] as const;
 
 // 平台标识：value 写进 frontmatter，label 用于图标的 title，icon 是 BrandIcon.astro 里的路径键。
@@ -40,5 +40,6 @@ export const PROJECT_PLATFORMS = [
   { value: "npm", label: "npm", icon: "npm" },
 ] as const;
 
-// 首页「项目」模块最多展示几条（精选优先，不足则用其余项目补齐）。
+// 首页「项目」模块最多展示几条。
+// 只统计 featured: true 的项目——没有精选的项目的不会进首页，所以这个值同时也是首页的上限。
 export const PROJECTS_ON_HOME = 4;

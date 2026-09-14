@@ -10,7 +10,7 @@ const pageDescription = "我发布过的仓库与工程：源码、上线地址�
 
 const projects: CollectionEntry<"project">[] = await getCollection("project");
 
-// 顺序：精选优先 → 名称。用名称兜底是为了构建结果稳定可复现
+// 顺序：置顶优先 → 名称。用名称兜底是为了构建结果稳定可复现
 // （Sveltia 目前没有文件夹集合的手动排序，没法直接读用户拖出来的顺序）。
 projects.sort((a, b) => {
   if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;

@@ -82,7 +82,7 @@ collections:
       - { label: "项目简介", name: "description", widget: "text", hint: "卡片上的一句话介绍，太长会被截断成 3 行显示。" }
       - { label: "状态", name: "status", widget: "select", options: ["维护中","开发中","已归档"], default: "维护中" }
       - { label: "平台", name: "platforms", widget: "select", multiple: true, required: false, default: [], options: ["github","gitee","npm"], hint: "选中哪些就在卡片上显示哪些平台图标。" }
-      - { label: "精选", name: "featured", widget: "boolean", default: false, required: false, hint: "打开后首页「项目」模块优先展示它。" }
+      - { label: "精选", name: "featured", widget: "boolean", default: false, required: false, hint: "【只有精选的项目才会出现在首页】。不勾选的话只在 /projects/ 页面里展示。" }
       - { label: "技术栈标签", name: "techStack", widget: "string", required: false, hint: "用逗号分隔，例如：React, JSON, Viewer, 阮周刊（中英文逗号、顿号都可以）。" }
       - { label: "封面图 URL", name: "cover", widget: "string", required: false, hint: "项目图标（COS 外链）。正方形 / 圆形都可以，按正方形小图标展示，图片会被完整缩放不裁切。留空则显示项目名的第一个字。" }
       - label: "项目链接"

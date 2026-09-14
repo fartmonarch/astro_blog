@@ -129,7 +129,8 @@ const entries = links
     --icon-size: 64px;
     --icon-font: 1.6rem;
 
-    /* 正方形、无边框：方形 logo 和圆形 logo 都能完整展示。
+    /* 正方形、无边框、底色就是卡片底色 —— 图标和卡片完全融合，不留一个方块印子。
+       有图时底色被图片盖住，等于"背景由上传的图片决定"；没图时才露出卡片底色。
        注意不要在这里加 border——圆形透明底 PNG 加了会看着像"圆里套方框"。 */
     width: var(--icon-size);
     height: var(--icon-size);
@@ -139,7 +140,7 @@ const entries = links
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--dark);
+    background: var(--card-bg);
   }
   /* contain 而不是 cover：非正方形图（长图、竖图）也完整显示，不会被裁掉两边 */
   .icon img {
