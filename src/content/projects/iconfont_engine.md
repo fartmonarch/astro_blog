@@ -6,7 +6,7 @@ platforms:
   - github
 featured: false
 techStack: Python,JavaScript,Agent skill
-cover: https://img.alicdn.com/imgextra/i2/O1CN01FF1t1g1Q3PDWpSm4b_!!6000000001920-55-tps-508-135.svg
+cover: https://img.alicdn.com/imgextra/i4/O1CN01Z5paLz1O0zuCC7osS_!!6000000001644-55-tps-83-82.svg
 links:
   live: ''
   repo: https://github.com/fartmonarch/iconfont_engine
