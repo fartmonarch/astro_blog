@@ -53,3 +53,42 @@ collections:
       - { label: "分类", name: "categories", widget: "select", multiple: true, min: 0, max: 3, required: false, default: [], options: ["实习笔记","前端笔记","服务端笔记","运维笔记","电脑知识","Agent"], hint: "留空 = 未分类，之后可以随时回来补。只有这里选中的分类才会生成分类页面。" }
       - { label: "标签", name: "tags", widget: "list", default: [], required: false, hint: "只做关键词展示，不会生成分类页面。" }
       - { label: "正文", name: "body", widget: "markdown" }
+
+  # ===== 项目展示 =====
+  # 字段与 src/content.config.ts 的 project 集合严格一一对应，改一边必须同步改另一边。
+  # 技术栈故意用文本框而不是 list 控件：不设白名单，自己用逗号分隔，构建时切成标签。
+  - name: "project"
+    label: "项目"
+    label_singular: "项目"
+    folder: "src/content/projects"
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    # 项目没有 _slug 输入框，文件名由「项目名称」自动生成。
+    # 名称若含中文，文件名也是中文——/projects/ 是单页、不用文件名当 URL，所以无所谓。
+    slug: "{{slug}}"
+    editor:
+      preview: false
+    summary: "{{title}} · {{status}}"
+    sortable_fields: [title, status, featured]
+    fields:
+      - { label: "项目名称", name: "title", widget: "string" }
+      - { label: "项目简介", name: "description", widget: "text", hint: "卡片上的一句话介绍，太长会被截断成 3 行显示。" }
+      - { label: "状态", name: "status", widget: "select", options: ["维护中","开发中","已归档"], default: "维护中" }
+      - { label: "平台", name: "platforms", widget: "select", multiple: true, required: false, default: [], options: ["github","gitee","npm"], hint: "选中哪些就在卡片上显示哪些平台图标。" }
+      - { label: "精选", name: "featured", widget: "boolean", default: false, required: false, hint: "打开后首页「项目」模块优先展示它。" }
+      - { label: "技术栈标签", name: "techStack", widget: "string", required: false, hint: "用逗号分隔，例如：React, JSON, Viewer, 阮周刊（中英文逗号、顿号都可以）。" }
+      - { label: "封面图 URL", name: "cover", widget: "string", required: false, hint: "项目图标（COS 外链）。正方形 / 圆形都可以，按正方形小图标展示，图片会被完整缩放不裁切。留空则显示项目名的第一个字。" }
+      - label: "项目链接"
+        name: "links"
+        widget: "object"
+        required: false
+        collapsed: true
+        summary: "{{fields.live}}"
+        hint: "三个都留空时，卡片底部不显示链接区。"
+        fields:
+          - { label: "项目上线地址", name: "live", widget: "string", required: false }
+          - { label: "源码仓库地址", name: "repo", widget: "string", required: false }
+          - { label: "npm 包地址", name: "npm", widget: "string", required: false }
+      - { label: "备注（正文，可选）", name: "body", widget: "markdown", required: false, hint: "项目目前不做站内详情页，这里的内容不会展示；留作写备注用。" }

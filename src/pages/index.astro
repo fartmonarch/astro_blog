@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Profile from "../components/Profile.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { PROJECTS_ON_HOME } from "../config";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
@@ -9,6 +11,14 @@ const pageDescription = "一个极简 Astro 博客主题，剥离干扰，拉近
 
 const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// 首页只放少量项目：精选优先，不够数再用其余项目补满，最多 PROJECTS_ON_HOME 张卡片。
+const allProjects: CollectionEntry<"project">[] = await getCollection("project");
+allProjects.sort((a, b) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  return a.data.title.localeCompare(b.data.title, "zh-CN");
+});
+const featuredProjects = allProjects.slice(0, PROJECTS_ON_HOME);
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -17,6 +27,23 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
       <Profile />
     </aside>
     <div class="content-area">
+      {
+        featuredProjects.length > 0 && (
+          <section class="home-projects">
+            <h2>项目</h2>
+            <div class="projects-grid">
+              {featuredProjects.map((project) => (
+                <ProjectCard project={project} />
+              ))}
+            </div>
+            <div class="home-projects-more">
+              <a href="/projects/" class="more-link">
+                全部项目 →
+              </a>
+            </div>
+          </section>
+        )
+      }
       <section class="recent-posts">
         <h2>归档</h2>
         <div class="posts-container">
@@ -77,6 +104,41 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
     padding-bottom: 0.5rem;
     margin-top: 0;
     margin-bottom: 1.5rem;
+  }
+
+  /* ===== 项目模块 ===== */
+  .home-projects {
+    margin-bottom: 4rem;
+  }
+  .home-projects h2 {
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+  /* 一行两个；内容区在 860px 断点下变窄，所以比 /projects/ 更早退回一列 */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  @media (min-width: 1100px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .home-projects-more {
+    margin-top: 1.5rem;
+    text-align: right;
+  }
+  .more-link {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .more-link:hover {
+    color: var(--light);
   }
   .posts-container {
     position: relative;

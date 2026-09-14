@@ -1,0 +1,278 @@
+---
+import BrandIcon from "./BrandIcon.astro";
+import type { CollectionEntry } from "astro:content";
+import type { HTMLAttributes } from "astro/types";
+import { PROJECT_PLATFORMS } from "../config";
+
+export interface Props extends HTMLAttributes<"article"> {
+  project: CollectionEntry<"project">;
+}
+
+const { project, ...attrs } = Astro.props;
+const { title, description, status, platforms, techStack, cover, links, featured } = project.data;
+
+// 技术栈拍成 "A|B|C" 挂在卡片上：项目页的筛选脚本读它做 DOM 过滤，不用再发请求。
+const techAttr = techStack.join("|");
+
+// 只保留词表里认得的平台，顺序按 PROJECT_PLATFORMS 走（与 CMS 里的填写顺序无关，展示保持一致）
+const projectPlatforms = PROJECT_PLATFORMS.filter((platform) => platforms.includes(platform.value));
+
+// 三个外链各自独立判空：填了才渲染入口，全空时整块不出现
+const entries = links
+  ? [
+      { href: links.live, label: "上线地址", icon: "external" as const },
+      { href: links.repo, label: "源码仓库", icon: "source" as const },
+      { href: links.npm, label: "npm", icon: "npm" as const },
+    ].filter(
+      (entry): entry is { href: string; label: string; icon: "external" | "source" | "npm" } =>
+        Boolean(entry.href),
+    )
+  : [];
+---
+
+<article class="project-card" data-tech-stack={techAttr} {...attrs}>
+  <div class="body">
+    <div class="head">
+      <!-- 图标位：尺寸跟头像一个量级，不是宽幅封面图。填了 cover 用图，否则用名字首字 -->
+      <div class="icon">
+        {
+          cover ? (
+            <img src={cover} alt={`${title} 图标`} loading="lazy" decoding="async" />
+          ) : (
+            <span>{title.slice(0, 1)}</span>
+          )
+        }
+      </div>
+
+      <div class="head-main">
+        <div class="title-row">
+          <h3 class="name">{title}</h3>
+          {featured && <span class="badge badge-featured">精选</span>}
+          <span class="badge badge-status">{status}</span>
+        </div>
+        {
+          projectPlatforms.length > 0 && (
+            <div class="platforms">
+              {projectPlatforms.map((platform) => (
+                <span class="platform" title={platform.label}>
+                  <BrandIcon name={platform.icon} />
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <p class="description">{description}</p>
+
+    {
+      techStack.length > 0 && (
+        <ul class="tech-stack">
+          {techStack.map((tech) => (
+            <li>{tech}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      entries.length > 0 && (
+        <div class="entries">
+          {entries.map((entry) => (
+            <a href={entry.href} target="_blank" rel="noopener noreferrer" class="entry-link">
+              <BrandIcon name={entry.icon} />
+              {entry.label}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    transition:
+      background-color var(--transition-speed) ease,
+      border-color var(--transition-speed) ease,
+      transform var(--transition-speed) ease;
+  }
+  .project-card:hover {
+    background: var(--card-hover-bg);
+    border-color: var(--light);
+    transform: translateY(-3px);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.25rem 1.4rem 1.4rem;
+  }
+
+  .head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    margin-bottom: 0.85rem;
+  }
+
+  /* 想改图标大小就改 --icon-size 与 --icon-font 这两个值 */
+  .icon {
+    --icon-size: 64px;
+    --icon-font: 1.6rem;
+
+    /* 正方形、无边框：方形 logo 和圆形 logo 都能完整展示。
+       注意不要在这里加 border——圆形透明底 PNG 加了会看着像"圆里套方框"。 */
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark);
+  }
+  /* contain 而不是 cover：非正方形图（长图、竖图）也完整显示，不会被裁掉两边 */
+  .icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8%;
+  }
+  /* 没填图标时用项目名第一个字顶上 */
+  .icon span {
+    font-size: var(--icon-font);
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .head-main {
+    flex: 1;
+    min-width: 0;
+  }
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--heading-color);
+    margin: 0;
+    line-height: 1.35;
+  }
+  .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  /* 精选用实色、状态用描边：两个徽章并排时不抢视觉 */
+  .badge-featured {
+    background: var(--accent);
+    color: var(--tag-hover-color);
+  }
+  .badge-status {
+    color: var(--text-secondary);
+    border: 1px solid var(--card-border);
+  }
+
+  .platforms {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.45rem;
+    font-size: 15px;
+  }
+  .platform {
+    display: inline-flex;
+    color: var(--text-secondary);
+    transition: color var(--transition-speed) ease;
+  }
+  .project-card:hover .platform {
+    color: var(--light);
+  }
+
+  .description {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0 0 1rem;
+    /* 两列卡片简介长度不一，统一截到 3 行，底部的链接区才能对齐 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+  }
+  .tech-stack li {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--tag-bg);
+    color: var(--text-muted);
+    transition:
+      background-color var(--transition-speed) ease,
+      color var(--transition-speed) ease;
+  }
+  .project-card:hover .tech-stack li {
+    background: var(--accent);
+    color: var(--tag-hover-color);
+  }
+
+  /* margin-top: auto 把入口区压到卡片底部：同一行的两列卡片高度不同也能对齐 */
+  .entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .entry-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--light);
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    transition:
+      background-color var(--transition-speed) ease,
+      border-color var(--transition-speed) ease,
+      color var(--transition-speed) ease;
+  }
+  .entry-link :global(svg) {
+    font-size: 15px;
+  }
+  .entry-link:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--tag-hover-color);
+  }
+</style>

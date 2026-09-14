@@ -1,0 +1,57 @@
+---
+/**
+ * 技术栈筛选按钮：用无样式 class（.tech-filter）+ :global 实现，所以按钮实例可以在页面里保持
+ * 干净（class="tech-filter"），样式全部集中在这一个文件里。
+ */
+export interface Props {
+  techs: string[];
+}
+
+const { techs } = Astro.props;
+---
+
+<div class="tech-filters" id="tech-filters">
+  <button type="button" class="tech-filter is-active" data-tech="">全部</button>
+  {
+    techs.map((tech) => (
+      <button type="button" class="tech-filter" data-tech={tech}>
+        {tech}
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .tech-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  /* :global 是因为这里的 class 落在"页面里写的按钮"上，不经过组件的 scoped 哈希 */
+  .tech-filters :global(button.tech-filter) {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: var(--tag-bg);
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-speed) ease,
+      color var(--transition-speed) ease,
+      border-color var(--transition-speed) ease;
+  }
+  .tech-filters :global(button.tech-filter:hover) {
+    border-color: var(--light);
+    color: var(--text-color);
+  }
+  /* 选中态由页面里的那段脚本切换 */
+  .tech-filters :global(button.tech-filter.is-active) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--tag-hover-color);
+  }
+</style>
