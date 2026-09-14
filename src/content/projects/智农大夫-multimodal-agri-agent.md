@@ -8,7 +8,7 @@ platforms:
   - github
 featured: true
 techStack: Vue,JavaScript,Python,RAG,LangChain
-cover: https://github.com/Jokerlove0626/MultiModal-Agri-Agent/blob/master/deepagriculture_frontend/public/favicon.jpg
+cover: https://github.com/Jokerlove0626/MultiModal-Agri-Agent/blob/master/deepagriculture_frontend/public/favicon.jpg?raw=true
 links:
   live: ''
   repo: https://github.com/Jokerlove0626/MultiModal-Agri-Agent
