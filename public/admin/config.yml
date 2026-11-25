@@ -50,7 +50,7 @@ collections:
     slug: "{{fields._slug}}"
     # 后台文章列表排序：默认按发布日期（即创建日期）从新到旧
     sortable_fields:
-      fields: [pubDate, updatedDate, title]
+      fields: [pubDate, title]
       default:
         field: pubDate
         direction: descending
