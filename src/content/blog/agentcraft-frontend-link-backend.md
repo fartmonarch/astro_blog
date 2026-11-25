@@ -1,5 +1,5 @@
 ---
-title: AgentCraft 项目-前端到后端的完整链路
+title: AgentCraft-前端到后端的链路
 description: Github学习项目AgentCraft知识点梳理
 pubDate: 2026-11-18
 updatedDate: ''
@@ -40,7 +40,6 @@ const userMessage = {
   createTime: new Date().toISOString()
 };
 理解为
-
 ```
 
 ```plain
@@ -52,7 +51,6 @@ userMessage = {
   imageUrl: 图片的 URL,
   createTime: 当前时间
 }
-
 ```
 
 ##### 所以用户的输入信息的数据流为
@@ -65,7 +63,6 @@ uploadedImage.name ──┘
 uploadedImage.url ────────────────────────→ userMessage.imageUrl
 
 currentConversation.id ──────────────────→ userMessage.conversationId
-
 ```
 
 **`userMessage` 的作用是让前端页面立即显示用户刚发出的消息。** 它不是下面 `chatAPI.sendMessage` 直接发送的请求体。
@@ -87,7 +84,6 @@ const thinkingMessage = {
   taskType: null,
   createTime: new Date().toISOString()
 };
-
 ```
 
 - thinkingMessage的主要作用就是等后端返回后，找到这条占位消息再替换它
@@ -95,7 +91,6 @@ const thinkingMessage = {
 
 ```plain
 setMessages(prev => [...prev, userMessage, thinkingMessage]);
-
 ```
 
 - 随后就是清空输入框、清空图片状态、并且将loading设为true
@@ -110,7 +105,6 @@ let aiRequestContent = inputMessage;
 if (uploadedImage && uploadedImageId) {
   aiRequestContent = `请根据图片内容回答问题。图片ID: ${uploadedImageId}\n图片名称: ${uploadedImage.name}\n图片URL: ${uploadedImage.url}\n问题: ${inputMessage}`;
 }
-
 ```
 
 - 这里图片内容更细就是为了和前面用来构造页面显示的userMessage.content做区别的，之前的只有图片名称和用户问题，这个真正要发送给后端内容中就应该传输提示词+图片ID+名称+URL+用户问题了
@@ -127,7 +121,6 @@ const response = await chatAPI.sendMessage({
 }, {
   signal: controller.signal
 });
-
 ```
 
 - sendMessage第一个参数就是业务数据
@@ -138,7 +131,6 @@ const response = await chatAPI.sendMessage({
   conversationId: 12,  
   content: "你好"
 }
-
 ```
 
 - 第二个参数signal用于支持前端取消请求。
@@ -149,7 +141,6 @@ const response = await chatAPI.sendMessage({
 
 ```plain
 sendMessage: (data, config) => api.post('/chat/messages', data, config),
-
 ```
 
 - 该文件前面配置了`baseURL:'/api'`
@@ -175,7 +166,6 @@ public Result<Message> sendMessage(@RequestBody ChatRequest request) {
         )
     );
 }
-
 ```
 
 - `@RequestBody ChatRequest request` 将请求体的数据绑定到ChatRequset对象，这个对象在方法里叫request，然后代码读取：
@@ -184,7 +174,6 @@ public Result<Message> sendMessage(@RequestBody ChatRequest request) {
 request.getUserId()           // 前端的userId
 request.getConversationId()   // 前端的conversationId
 request.getContent()          // 前端的content
-
 ```
 
 - 接着Controller把三个值交给chatService.sendMessage
@@ -206,7 +195,6 @@ const aiMessage = {
   taskType: response.data.taskType || null,
   createTime: response.data.createTime || new Date().toISOString()
 };
-
 ```
 
 - 随后替换占位消息，根据thinkingMessageId找到之前的占位消息，替换真正的aiMessage
@@ -217,7 +205,6 @@ setMessages(prev =>
     msg.id === thinkingMessageId ? aiMessage : msg
   )
 );
-
 ```
 
 - React 根据更新后的 `messages` 重新渲染，页面就显示出了 AI 回复。
