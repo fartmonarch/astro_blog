@@ -48,6 +48,12 @@ collections:
     # 保存前会校验：不能为空、不能含 "/" 或空格、不能与已有文章重名。
     # 想退回按标题自动生成文件名，改回 slug: "{{slug}}"
     slug: "{{fields._slug}}"
+    # 后台文章列表排序：默认按发布日期（即创建日期）从新到旧
+    sortable_fields:
+      fields: [pubDate, updatedDate, title]
+      default:
+        field: pubDate
+        direction: descending
     editor:
       preview: false          # Astro 无现成预览 iframe，关闭避免报错
     fields:
