@@ -311,6 +311,34 @@ code {
   font-size: 0.9em;
 }
 
+/* ===== Mermaid 流程图 ===== */
+/* 由 src/scripts/mermaid.ts 把 <pre data-language="mermaid"> 替换成这个容器 */
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 语法错误时脚本会把源码还回来，用代码块的样子兜底 */
+.mermaid-diagram.mermaid-error {
+  display: block;
+  padding: 1.5rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre;
+  color: #e1e4e8;
+  background-color: #0d1117;
+  border: 1px solid rgba(218, 234, 255, 0.1);
+  border-radius: 8px;
+}
+
 /* ===== 表格 ===== */
 table {
   width: 100%;

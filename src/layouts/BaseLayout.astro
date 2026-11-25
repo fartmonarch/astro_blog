@@ -25,6 +25,11 @@ const { title, description } = Astro.props;
     </main>
     <Footer />
 
+    <!-- Mermaid 流程图：只有页面里出现 ```mermaid 代码块时才会真正加载 mermaid 本体 -->
+    <script>
+      import "../scripts/mermaid";
+    </script>
+
     <!-- 回到顶部按钮 -->
     <button id="back-to-top" class="back-to-top" aria-label="回到顶部">
       <svg
